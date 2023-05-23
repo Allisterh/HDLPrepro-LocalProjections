@@ -1,2 +1,12 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+README.Rmd
+^application4_1\.R$
+^application4_2\.R$
+^calibrating_DFM3_2\.R$
+^plotting_simulation3_1\.R$
+^plotting_simulation3_2\.R$
+^processing_FREDMD\.R$
+^processing_R&Z_data\.R$
+^running_simulation3_1\.R$
+^running_simulation3_2\.R$
