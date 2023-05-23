@@ -32,7 +32,7 @@ This package also makes heavy use of our package `desla`. The latest version of 
 devtools::install_github("RobertAdamek/desla")
 ```
 ## Usage
-In addition to a collection of functions and datasets, this package contains a several R scripts which reproduce different parts of our paper. These files can be found in the `inst/replication_scripts` folder of the package. These are easily accessible from the GitHub page https://github.com/RobertAdamek/HDLPrepro, or by unpacking the package tarball with `untar()`. The scripts included are as follows:
+In addition to a collection of functions and datasets, this package contains a several R scripts which reproduce different parts of our paper. These scripts can be found in the `inst/replication_scripts` folder of the package. They are easily accessible from the GitHub page https://github.com/RobertAdamek/HDLPrepro, or by unpacking the package tarball with `untar()`. The scripts included are as follows:
 
 - Simulations in Section 3.1: *Sparse Structural VAR Model*
   - `running_simulation3_1.R`: Runs the simulation and saves intermediate files in a user-chosen folder.
