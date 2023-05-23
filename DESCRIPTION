@@ -1,12 +1,15 @@
-Package: HDLPrepro
 Type: Package
+Package: HDLPrepro
 Title: What the Package Does in One 'Title Case' Line
 Version: 1.0
 Date: 2023-05-22
 Author: Your Name
 Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one or more full sentences.
+Description: One paragraph description of what the package does as one or
+    more full sentences.
 License: GPL (>= 2)
+Depends: 
+    R (>= 3.5.0)
 Imports: 
     bigtime,
     desla,
@@ -23,5 +26,5 @@ LinkingTo:
     Rcpp,
     RcppArmadillo,
     RcppProgress
-RoxygenNote: 7.2.1
 Encoding: UTF-8
+RoxygenNote: 7.2.1
