@@ -12,7 +12,7 @@ in High-Dimensions.
 This package can be installed easily with the devtools package:
 
 ``` r
-install.packages("devtools")
+utils::install.packages("devtools")
 ```
 
 You can then install the HDLPrepro package from the GitHub depository
@@ -34,10 +34,33 @@ devtools::install_github("RobertAdamek/desla")
 
 In addition to a collection of functions and datasets, this package
 contains a several R scripts which reproduce different parts of our
-paper. These files can be found in the `inst/replication_scripts` folder
-of the package. These are easily accessible from the GitHub page
+paper. These scripts can be found in the `inst/replication_scripts`
+folder of the package. They are easily accessible from the GitHub page
 <https://github.com/RobertAdamek/HDLPrepro>, or by unpacking the package
-tarball with `untar()`. The scripts included are as follows:
+tarball with `untar()`.
+
+These scripts make use of several packages other than `HDLPrepro` and
+`desla`. For completeness, we list all used packages here, as well as
+the package versions with which we ran the code ourselves:
+
+- `desla` (0.2.0)
+- `dplyr` (1.1.2)
+- `ggpattern` (1.0.1)
+- `ggplot2` (3.4.2)
+- `ggpubr` (0.6.0)
+- `HDLPrepro` (1.0.0)
+- `parallel` (4.2.2)
+- `readxl` (1.4.1)
+- `reshape2` (1.4.4)
+
+We expect these packages to remain backwards compatible, and the most
+up-to-date versions can be installed with
+
+``` r
+utils::install.packages(pkgs = c("dplyr", "ggpattern", "ggplot2", "ggpubr", "parallel", "readxl", "reshape2"))
+```
+
+The scripts included are as follows:
 
 - Simulations in Section 3.1: *Sparse Structural VAR Model*
   - `running_simulation3_1.R`: Runs the simulation and saves

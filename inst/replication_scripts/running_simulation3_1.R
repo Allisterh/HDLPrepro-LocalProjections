@@ -1,30 +1,36 @@
-library(parallel)
-library(HDLPrepro)
+# This script runs the simulation of Section 3.1 and saves intermediate files in a user-chosen folder
+rm(list=ls())
+library(HDLPrepro) #1.0.0
+
 
 setwd("your/path/here")
 
-Ns<-c(20,40,100)
-Ts<-c(100,200,500)
-PIs<-c(0.4,0.5,0.6,0.7,0.8)
+################################ settings ######################################
+Ns<-c(20,40,100) # numbers of variables 
+Ts<-c(100,200,500) # sample sizes
+PIs<-c(0.4,0.5,0.6,0.7,0.8) # values of the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
 #PIs<-0.8 # to speed up the simulation significantly, one could run them only for the plug-in constant 0.8 which we present in the paper
-
-M=1000
-hmax=10
-VAR_lags=4
-LP_lags=4
-
-
-selection=4
-
+M=1000 # number of replications in the simulation
+hmax=10 #  maximum horizon - the impulse response function is evaluated from horizon 0 to hmax
+VAR_lags=4 # number of VAR lags in the DGP
+LP_lags=4 # number of lags included in the local projection estimation equations
+selection=4 # type of selection of the penalization parameter. 4 denotes the data-dependent selection which uses the plug-in constant above. 1-3 denote AIC, BIC and EBIC respectively
 progress_bar=FALSE # setting this to TRUE will show a progress bar each time simulate_LP is ran, so showing progress over simulation replications
-OLS=FALSE
-threads=parallel::detectCores()-2
-alphas=0.05
-z_quantiles=qnorm(alphas/2.0,0.0,1.0,FALSE,FALSE);
-chi2_quantiles=qchisq(alphas,1,FALSE,FALSE);
+OLS=FALSE # setting whether OLS should be used in estimating the local projections
+threads=parallel::detectCores()-2 # the number of cores use in parallel computation 
+alphas=0.05 # desired level of the test; equivalently, (1-alpha)% confidence intervals 
+z_quantiles=qnorm(alphas/2.0,0.0,1.0,FALSE,FALSE); # quantiles of the Normal distribution associated with alpha
+chi2_quantiles=qchisq(alphas,1,FALSE,FALSE); # quantiles of the Chi-squared distribution associated with alpha
+################################################################################
+
+
+
+
 
 # First set: partial DL ---------------------------------------------------
-init_partial=TRUE
+################################ settings ######################################
+init_partial=TRUE # should the parameters of interest remain unpenalized in the first step?
+################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
     for(pi in 1:length(PIs)){
@@ -44,7 +50,9 @@ for(n in 1:length(Ns)){
 
 
 # Second set: regular DL --------------------------------------------------
-init_partial=FALSE
+################################ settings ######################################
+init_partial=FALSE # should the parameters of interest remain unpenalized in the first step?
+################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
     for(pi in 1:length(PIs)){
@@ -64,7 +72,9 @@ for(n in 1:length(Ns)){
 
 
 # FThird set: partial DL switching ----------------------------------------
-init_partial=TRUE
+################################ settings ######################################
+init_partial=TRUE # should the parameters of interest remain unpenalized in the first step?
+################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
     for(pi in 1:length(PIs)){
@@ -84,7 +94,9 @@ for(n in 1:length(Ns)){
 
 
 # Fourth set: regular DL switching ----------------------------------------
-init_partial=FALSE
+################################ settings ######################################
+init_partial=FALSE # should the parameters of interest remain unpenalized in the first step?
+################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
     for(pi in 1:length(PIs)){

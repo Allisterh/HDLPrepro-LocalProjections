@@ -1,4 +1,14 @@
-library(HDLPrepro)
+# This script processes the Section 3.2 simulation files and generates the plots in our paper
+rm(list=ls())
+library(HDLPrepro) #1.0.0
+
+# in case the following packages are not installed, run:
+#install.packages(c("ggplot2", "ggpubr", "ggpattern", "reshape2"))
+library(ggplot2) #3.4.2
+library(reshape2) #1.4.4
+library(ggpattern) #1.0.1
+library(ggpubr) #0.6.0
+
 # This sets the working directory to where our simulation results are stored in the package.
 # If you ran the simulations using the file "running_simulation3_1.R", you should set the directory to wherever you saved the simulation outputs then
 setwd(system.file("extdata", package="HDLPrepro", mustWork = TRUE))
@@ -20,11 +30,6 @@ plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP")
 
 
 # plotting the summary statistics comparing the dense and sparse D --------
-
-library(ggplot2)
-library(reshape2)
-library(ggpattern)
-library(ggpubr)
 
 pc_scaling<-sqrt(crossprod(pc_OLS_DFM$factors$F_hat)[1,1])
 dense_nonzeros<-apply(X=pc_OLS_DFM$factors$Lambda, MARGIN=2, FUN=function(x){sum(x!=0)})

@@ -1,4 +1,10 @@
-library(HDLPrepro)
+# This script processes the data obtained from the FRED-MD database. It includes our data transformations which differ from the "default" choices, and our classification of "fast" and "slow" variables
+rm(list=ls())
+library(HDLPrepro) #1.0.0
+# in case the following package is not installed, run:
+#install.packages("xtable")
+library(xtable) #1.8-4
+
 # Read in data ------------------------------------------------------------
 raw_data<-read.csv(file=system.file("extdata", "current.csv", package="HDLPrepro", mustWork = TRUE),encoding = "UTF-8") #the file "current.csv" was obtained from https://research.stlouisfed.org/econ/mccracken/fred-databases/ on 9/9/2021
 colnames(raw_data)[colnames(raw_data)=="S.P.500"]<-"S&P 500" #renamed S.P.500 -> S&P 500, read.csv() changed it
@@ -621,7 +627,6 @@ clean_SM<-clean_SM[clean_SM$Fast_slow!=0,]
 # export to latex ---------------------------------------------------------
 # checking that all variables are accounted for
 nrow(clean_OI)+nrow(clean_LM)+nrow(clean_CO)+nrow(clean_OrIn)+nrow(clean_MC)+nrow(clean_IE)+nrow(clean_Pr)+nrow(clean_SM)
-library(xtable)
 xtable(clean_OI)
 xtable(clean_LM)
 xtable(clean_CO)

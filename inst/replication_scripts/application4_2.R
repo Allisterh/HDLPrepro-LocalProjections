@@ -1,20 +1,26 @@
-library(HDLPrepro)
-library(desla)
-library(ggplot2)
-library(ggpubr)
-library(ggpattern)
-library(reshape2)
-library(parallel)
+# This script estimates the models and plots the results of Section 4.2
+rm(list=ls())
+library(HDLPrepro) #1.0.0
+
+# in case the following packages are not installed, run:
+#install.packages(c("ggplot2", "ggpubr", "ggpattern", "reshape2"))
+#devtools::install_github("RobertAdamek/desla")
+library(desla) #0.2.0
+library(ggplot2) #3.4.2
+library(ggpubr) #0.6.0
+library(ggpattern) #1.0.1
+library(reshape2) #1.4.4
+
 
 data("dc")# to see how this dataset was made, see the script "processing_R&Z_data.R"
 
 # 40 lags -----------------------------------------------------------------
-
-hmax=20
-lags=40
-PIconstant=0.4
-threads<-detectCores()
-
+################################ settings ######################################
+hmax=20 # maximum horizon - the x axis of the plot will be 0:hmax
+lags=40 # number of lags included in the local projection equations
+PIconstant=0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
+threads<-detectCores() # the number of cores use in parallel computation 
+################################################################################
 # estimating these HDLPs can take a few minutes
 
 linear_g<-HDLP(r=NULL, x=dc$newsy, y=dc$g, q=cbind(dc$y,dc$taxy), lags=lags, hmax=hmax, PI_constant=PIconstant, threads=threads)
@@ -138,10 +144,12 @@ dummies[,2]<-dc$lag_slack*(1-dc$lag_recession)
 dummies[,3]<-(1-dc$lag_slack)*dc$lag_recession
 dummies[,4]<-(1-dc$lag_slack)*(1-dc$lag_recession)
 
-hmax=20
-lags=4
-PIconstant=0.4
-threads=detectCores()
+################################ settings ######################################
+hmax=20 # maximum horizon - the x axis of the plot will be 0:hmax
+lags=4 # number of lags included in the local projection equations
+PIconstant=0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
+threads=detectCores() # the number of cores use in parallel computation 
+################################################################################
 
 # estimating these HDLPs can take up to a minute
 {

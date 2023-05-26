@@ -1,6 +1,12 @@
-library(HDLPrepro)
-library(readxl)
-library(dplyr)
+# This script processes the data obtained from the website of Valerie A. Ramey, relating to the paper Ramey and Zubairy (2018)
+rm(list=ls())
+library(HDLPrepro) #1.0.0
+
+# in case the following packages are not installed, run:
+#install.packages(c("readxl", "dplyr"))
+library(readxl) #1.4.1
+library(dplyr) #1.1.2
+
 # We obtained the data from the webpage of Valerie A. Ramey: https://econweb.ucsd.edu/~vramey/research.html#govt.
 # Specifically, from the link "Data and Programs" under the section "Government Spending Multipliers in Good Times and in Bad: Evidence from U.S. Historical Data"
 # We ran the provided STATA code to define the variables as they do in their paper, then saved them into a new .xls file, and we include this file as part of the package

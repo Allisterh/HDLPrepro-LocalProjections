@@ -1,21 +1,29 @@
-library(reshape2)
-library(ggplot2)
-library(ggpubr)
-library(HDLPrepro)
+# This script processes the files of the simulation in Section 3.1 and generates the plots in our paper
+rm(list=ls())
+library(HDLPrepro) #1.0.0
+
+# in case the following packages are not installed, run:
+#install.packages(c("ggplot2", "ggpubr", "reshape2"))
+library(reshape2) #1.4.4
+library(ggplot2) #3.4.2
+library(ggpubr) #0.6.0
+
 
 # load the simulation results and process into array ----------------------
 # this points to a folder in the package containing our simulation results. 
 # If the simulation is rerun, sim_folder should be the folder where the simulation outputs are stored
 sim_folder<-system.file("extdata", package="HDLPrepro", mustWork = TRUE) 
 
-Ns<-c(20,40,100)
-Ts<-c(100,200,500)
-PIs<-c(0.4,0.5,0.6,0.7,0.8)
-
-M=1000
-hmax=10
-VAR_lags=4
-LP_lags=4
+# THE FOLLOWING SETTINGS SHOULD MATCH THOSE IN THE SCRIPT running_simulations3_1.R 
+################################ settings ######################################
+Ns<-c(20,40,100) # numbers of variables 
+Ts<-c(100,200,500) # sample sizes
+PIs<-c(0.4,0.5,0.6,0.7,0.8) # values of the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
+M=1000 # number of replications in the simulation
+hmax=10 #  maximum horizon - the impulse response function is evaluated from horizon 0 to hmax
+VAR_lags=4 # number of VAR lags in the DGP
+LP_lags=4 # number of lags included in the local projection estimation equations
+################################################################################
 
 # loading and processing these can take up to a minute
 coverage<-sims_to_coverage(path=sim_folder, M, Ns, Ts, PIs, hmax, partial=FALSE, switching=FALSE)

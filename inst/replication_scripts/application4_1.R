@@ -1,12 +1,22 @@
-library(HDLPrepro)
-library(ggplot2)
-library(ggpubr)
-library(desla)
-library(parallel)
-data("CDbmedium") # to see how this dataset was made, see the script "processing_FREDMD.R"
-hmax<-49
-lags<-13
+# This script estimates the models and plots the results of our application in Section 4.1, using the same FRED-MD processed data as that used in Section 3.2
+rm(list=ls())
+library(HDLPrepro) #1.0.0
 
+# in case the following packages are not installed, run:
+#install.packages(c("ggplot2", "ggpubr"))
+#devtools::install_github("RobertAdamek/desla")
+library(ggplot2) #3.4.2
+library(ggpubr) #0.6.0
+library(desla) #0.2.0
+
+data("CDbmedium") # to see how this dataset was made, see the script "processing_FREDMD.R"
+
+################################ settings ######################################
+hmax<-49 # maximum horizon - the x axis of the plot will be 0:hmax
+lags<-13 # number of lags included in the local projection equations
+PI_constant<-0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
+threads<-parallel::detectCores() # the number of cores use in parallel computation 
+################################################################################
 
 # estimation --------------------------------------------------------------
 # estimating and bootstrapping the FAVAR can take up to a minute
@@ -19,8 +29,7 @@ fast<-as.matrix(CDbmedium$fast_data)
 IP<-as.matrix(CDbmedium$data_all[,"INDPRO"])
 CPI<-as.matrix(CDbmedium$data_all[,"CPIAUCSL"])
 FFR<-as.matrix(CDbmedium$FFR)
-PI_constant<-0.4
-threads<-detectCores()
+
 
 HDLP_FFR_irf<-HDLP(r=cbind(other_slow,IP,CPI), x=FFR, y=FFR, q=fast,
                 y_predetermined = F, cumulate_y = F, hmax=hmax, lags=lags, threads = threads, PI_constant = PI_constant)
