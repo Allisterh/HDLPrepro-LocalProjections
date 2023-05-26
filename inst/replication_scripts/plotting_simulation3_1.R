@@ -38,6 +38,7 @@ width_partial_switching<-sims_to_width(path=sim_folder, M, Ns, Ts, PIs, hmax, pa
 
 
 # plot coverages ----------------------------------------------------------
+# code for Figure S.1 in the supplementary appendix. Figure 1 is the middle row of this plot
 pi=5 # pi=5 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. For different values, take pi=1,...,4
 count<-0
 P<-list()
@@ -50,11 +51,11 @@ for(n in 1:length(Ns)){
     df_melt<-melt(df, id="horizon")
     P[[count]]<-ggplot(data=df,
                        aes(x=horizon, y=value, colour=variable)) +
-      geom_hline(yintercept=0.95, color="black", size=0.5)+
-      geom_line(aes(x=horizon,y=not_switching), colour="red", size=0.75)+ #regular DL
-      geom_line(aes(x=horizon,y=switching), colour="red", size=0.75, linetype="twodash")+ #regular DL switching
-      geom_line(aes(x=horizon,y=not_switching_partial), colour="blue", size=0.75)+ #partial DL
-      geom_line(aes(x=horizon,y=switching_partial), colour="blue",size=0.75,  linetype="twodash")+ #partial DL switching
+      geom_hline(yintercept=0.95, color="black", linewidth=0.5)+
+      geom_line(aes(x=horizon,y=not_switching), colour="red", linewidth=0.75)+ #regular DL
+      geom_line(aes(x=horizon,y=switching), colour="red", linewidth=0.75, linetype="twodash")+ #regular DL switching
+      geom_line(aes(x=horizon,y=not_switching_partial), colour="blue", linewidth=0.75)+ #partial DL
+      geom_line(aes(x=horizon,y=switching_partial), colour="blue",linewidth=0.75,  linetype="twodash")+ #partial DL switching
       ylim(c(0,1.0001))+
       ylab("Coverage")+
       xlab("Horizon")+
@@ -69,6 +70,7 @@ ggarrange(P[[1]],P[[2]],P[[3]],P[[4]],P[[5]],P[[6]],P[[7]],P[[8]],P[[9]],
 
 
 # plot interval widths ----------------------------------------------------
+# code for Figure S.2 in the supplementary appendix
 pi=5 # pi=5 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. For different values, take pi=1,...,4
 count<-0
 P<-list()
@@ -81,10 +83,10 @@ for(n in 1:length(Ns)){
     df_melt<-melt(df, id="horizon")
     P[[count]]<-ggplot(data=df,
                        aes(x=horizon, y=value, colour=variable)) +
-      geom_line(aes(x=horizon,y=not_switching), colour="red", size=0.75)+ #regular DL
-      geom_line(aes(x=horizon,y=switching), colour="red", size=0.75,  linetype="twodash")+ #regular DL switching
-      geom_line(aes(x=horizon,y=not_switching_partial), colour="blue", size=0.75)+ #partial DL
-      geom_line(aes(x=horizon,y=switching_partial), colour="blue", size=0.75, linetype="twodash")+ #partial DL switching
+      geom_line(aes(x=horizon,y=not_switching), colour="red", linewidth=0.75)+ #regular DL
+      geom_line(aes(x=horizon,y=switching), colour="red", linewidth=0.75,  linetype="twodash")+ #regular DL switching
+      geom_line(aes(x=horizon,y=not_switching_partial), colour="blue", linewidth=0.75)+ #partial DL
+      geom_line(aes(x=horizon,y=switching_partial), colour="blue", linewidth=0.75, linetype="twodash")+ #partial DL switching
       scale_x_continuous(breaks = function(x) unique(floor(pretty(seq(0, (max(x) + 1) * 1.1)))))+
       ggtitle(paste0("P=",Ns[n], ", T=",Ts[t]))+
       ylab("Width")+

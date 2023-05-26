@@ -19,7 +19,7 @@ data("dc")# to see how this dataset was made, see the script "processing_R&Z_dat
 hmax=20 # maximum horizon - the x axis of the plot will be 0:hmax
 lags=40 # number of lags included in the local projection equations
 PIconstant=0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
-threads<-detectCores() # the number of cores use in parallel computation 
+threads<-parallel::detectCores() # the number of cores used in parallel computation 
 ################################################################################
 # estimating these HDLPs can take a few minutes
 
@@ -35,6 +35,7 @@ nl_y<-HDLP(r=NULL, x=dc$newsy, y=dc$y, q=cbind(dc$g,dc$taxy), state_variables=dc
 #data("nl_g")
 #data("nl_y")
 
+# code for Figure 4
 g_df<-data.frame(mean_all=linear_g$intervals[,2,1], lb_all=linear_g$intervals[,1,1], ub_all=linear_g$intervals[,3,1],
                  mean_hu=nl_g$intervals[,2,1], lb_hu=nl_g$intervals[,1,1], ub_hu=nl_g$intervals[,3,1],
                  mean_lu=nl_g$intervals[,2,2], lb_lu=nl_g$intervals[,1,2], ub_lu=nl_g$intervals[,3,2],
@@ -165,6 +166,7 @@ threads=detectCores() # the number of cores use in parallel computation
 #data("nl_g_4states")
 #data("nl_y_4states")
 
+# code for Figure 5
 theme_update(plot.title = element_text(hjust = 0.5))
 col1<-"blue"
 col2<-"red"

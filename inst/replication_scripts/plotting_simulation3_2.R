@@ -17,20 +17,27 @@ for(setup in c("pc_OLS", "sWF_lasso")){
 }
 
 # plotting the "dense" DFM  -----------------------------------------------
+# code for Figure S.4 in the supplementary appendix
 plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
 #ggsave(filename="pc_OLS_models.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+#code for Figure S.5 in the supplementary appendix
 plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
 #ggsave(filename="pc_OLS_lrvs.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
 
 # plotting the "sparse" DFM -----------------------------------------------
+# code for Figure 2
 plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
 #ggsave(filename="sWF_lasso_models.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+# code for Figure S.6 in the supplementary appendix
 plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
 #ggsave(filename="sWF_lasso_lrvs.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
 
 
 # plotting the summary statistics comparing the dense and sparse D --------
-
+# code for Figure S.3 in the supplementary appendix
+# this loads the calibrated DFM parameters included in the package. If you computed your own with the script calibrating_DFM3_2.R, ignore these data() commands
+data("pc_OLS_DFM")
+data("sWF_lasso_DFM")
 pc_scaling<-sqrt(crossprod(pc_OLS_DFM$factors$F_hat)[1,1])
 dense_nonzeros<-apply(X=pc_OLS_DFM$factors$Lambda, MARGIN=2, FUN=function(x){sum(x!=0)})
 dense_l1<-apply(X=pc_OLS_DFM$factors$Lambda*pc_scaling, MARGIN=2, FUN=function(x){sum(abs(x))})
