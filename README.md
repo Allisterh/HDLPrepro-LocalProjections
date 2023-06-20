@@ -3,13 +3,13 @@
 
 ## HDLPrepro: Reproducing Adamek, Smeekes, Wilms (2023)
 
-This package contains code and datasets to reproduce the simulations and
-applications in Adamek, Smeekes, Wilms (2023) Local Projection Inference
-in High-Dimensions.
+This R package contains code and datasets to reproduce the simulations
+and applications in Adamek, Smeekes, Wilms (2023) Local Projection
+Inference in High-Dimensions.
 
 ## Installation
 
-This package can be installed easily with the devtools package:
+This package can be installed with the devtools package:
 
 ``` r
 utils::install.packages("devtools")
@@ -22,9 +22,15 @@ directly by running:
 devtools::install_github("RobertAdamek/HDLPrepro")
 ```
 
-This package also makes heavy use of our package `desla`. The latest
-version of this package can be installed from the GitHub depository by
-running
+Note that as the package contains C++ code, installing the package from
+source might require some additional tools depending on your system; see
+the details for
+[Windows](https://cran.r-project.org/bin/windows/Rtools/) and
+[Mac](https://mac.r-project.org/tools/).
+
+This package also makes heavy use of our package `desla`, which is
+available on CRAN. Alternatively, the latest version of this package can
+be installed from the GitHub depository by running
 
 ``` r
 devtools::install_github("RobertAdamek/desla")
@@ -49,15 +55,23 @@ the package versions with which we ran the code ourselves:
 - `ggplot2` (3.4.2)
 - `ggpubr` (0.6.0)
 - `HDLPrepro` (1.0.0)
-- `parallel` (4.2.2)
 - `readxl` (1.4.1)
 - `reshape2` (1.4.4)
+- `xtable` (1.8-4)
 
 We expect these packages to remain backwards compatible, and the most
 up-to-date versions can be installed with
 
 ``` r
-utils::install.packages(pkgs = c("dplyr", "ggpattern", "ggplot2", "ggpubr", "parallel", "readxl", "reshape2"))
+utils::install.packages(pkgs = c("dplyr", "ggpattern", "ggplot2", "ggpubr", "readxl", "reshape2"))
+```
+
+Alternatively, it is possible to install the versions used in this
+replication package using the `remotes` package. For example, to install
+`ggpattern` v1.0.1, use
+
+``` r
+remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.r-project.org")
 ```
 
 The scripts included are as follows:

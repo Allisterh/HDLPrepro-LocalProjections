@@ -14,12 +14,12 @@ knitr::opts_chunk$set(
 
 ## HDLPrepro: Reproducing Adamek, Smeekes, Wilms (2023)
 
-This package contains code and datasets to reproduce the
+This R package contains code and datasets to reproduce the
     simulations and applications in Adamek, Smeekes, Wilms (2023) Local
     Projection Inference in High-Dimensions.
     
 ## Installation
-This package can be installed easily with the devtools package:
+This package can be installed with the devtools package:
 ``` {r install-devtools, eval = FALSE}
 utils::install.packages("devtools")
 ```
@@ -27,7 +27,9 @@ You can then install the HDLPrepro package from the GitHub depository directly b
 ```{r install-github, eval = FALSE}
 devtools::install_github("RobertAdamek/HDLPrepro")
 ```
-This package also makes heavy use of our package `desla`. The latest version of this package can be installed from the GitHub depository by running
+Note that as the package contains C++ code, installing the package from source might require some additional tools depending on your system; see the details for [Windows](https://cran.r-project.org/bin/windows/Rtools/) and [Mac](https://mac.r-project.org/tools/).
+
+This package also makes heavy use of our package `desla`, which is available on CRAN. Alternatively, the latest version of this package can be installed from the GitHub depository by running
 ```{r install-github-desla, eval = FALSE}
 devtools::install_github("RobertAdamek/desla")
 ```
@@ -50,6 +52,11 @@ We expect these packages to remain backwards compatible, and the most up-to-date
 ```{r install-other-packages, eval = FALSE}
 utils::install.packages(pkgs = c("dplyr", "ggpattern", "ggplot2", "ggpubr", "readxl", "reshape2"))
 ```
+Alternatively, it is possible to install the versions used in this replication package using the `remotes` package. For example, to install `ggpattern` v1.0.1, use
+```{r install-remotes, eval = FALSE}
+remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.r-project.org")
+```
+
 The scripts included are as follows:
 
 - Simulations in Section 3.1: *Sparse Structural VAR Model*
