@@ -19,7 +19,9 @@ simulate_LP(
   PIconstant,
   progress_bar,
   OLS,
-  threads
+  threads,
+  seeds_gen,
+  seeds_DL
 )
 }
 \arguments{

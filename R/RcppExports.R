@@ -22,7 +22,7 @@
 #'\item{\code{intervals}}{array/cube of confidence intervals of the impulse responses}
 #'\item{\code{manual_Thetahat}}{array/cube of the Theta hat matrices}
 #'\item{\code{betahats}}{array/cube of beta hats, the first stage lasso estimates}
-simulate_LP <- function(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1, init_partial, z_quantiles, chi2_quantiles, selection, PIconstant, progress_bar, OLS, threads) {
-    .Call(`_HDLPrepro_simulate_LP`, M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1, init_partial, z_quantiles, chi2_quantiles, selection, PIconstant, progress_bar, OLS, threads)
+simulate_LP <- function(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1, init_partial, z_quantiles, chi2_quantiles, selection, PIconstant, progress_bar, OLS, threads, seeds_gen, seeds_DL) {
+    .Call(`_HDLPrepro_simulate_LP`, M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1, init_partial, z_quantiles, chi2_quantiles, selection, PIconstant, progress_bar, OLS, threads, seeds_gen, seeds_DL)
 }
 

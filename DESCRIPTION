@@ -31,6 +31,7 @@ Imports:
 LinkingTo: 
     Rcpp,
     RcppArmadillo,
-    RcppProgress
+    RcppProgress,
+    sitmo
 Encoding: UTF-8
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

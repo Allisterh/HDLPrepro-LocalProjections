@@ -21,6 +21,7 @@ threads=parallel::detectCores()-2 # the number of cores used in parallel computa
 alphas=0.05 # desired level of the test; equivalently, (1-alpha)% confidence intervals 
 z_quantiles=qnorm(alphas/2.0,0.0,1.0,FALSE,FALSE); # quantiles of the Normal distribution associated with alpha
 chi2_quantiles=qchisq(alphas,1,FALSE,FALSE); # quantiles of the Chi-squared distribution associated with alpha
+set.seed(1) # seed which controls the random number generation for reproducibility. We use set.seed(1) in our simulation
 ################################################################################
 
 
@@ -40,9 +41,11 @@ for(n in 1:length(Ns)){
       VAR_coefficients<-make_VAR_coefs(N)
       irf_1to1<-irf_from_VAR(VAR_coefficients)
       Sigma_epsilon<-diag(N)
+      seeds_gen<-sample(1e8, M)
+      seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
       sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
                        init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads)
+                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
       saveRDS(sim, file=paste0("partial_N",N,"_T",T_,"_PI",PIconstant,".RDS"))
     }
   }
@@ -62,16 +65,18 @@ for(n in 1:length(Ns)){
       VAR_coefficients<-make_VAR_coefs(N)
       irf_1to1<-irf_from_VAR(VAR_coefficients)
       Sigma_epsilon<-diag(N)
+      seeds_gen<-sample(1e8, M)
+      seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
       sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
                        init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads)
+                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
       saveRDS(sim, file=paste0("regular_N",N,"_T",T_,"_PI",PIconstant,".RDS"))
     }
   }
 }
 
 
-# FThird set: partial DL switching ----------------------------------------
+# Third set: partial DL switching ----------------------------------------
 ################################ settings ######################################
 init_partial=TRUE # should the parameters of interest remain unpenalized in the first step?
 ################################################################################
@@ -84,9 +89,11 @@ for(n in 1:length(Ns)){
       VAR_coefficients<-make_VAR_coefs2(N) # uses VAR coefficients with switched signs
       irf_1to1<-irf_from_VAR(VAR_coefficients)
       Sigma_epsilon<-diag(N)
+      seeds_gen<-sample(1e8, M)
+      seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
       sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
                        init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads)
+                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
       saveRDS(sim, file=paste0("partial_N",N,"_T",T_,"_PI",PIconstant,"_switching_signs.RDS"))
     }
   }
@@ -106,9 +113,11 @@ for(n in 1:length(Ns)){
       VAR_coefficients<-make_VAR_coefs2(N) # uses VAR coefficients with switched signs
       irf_1to1<-irf_from_VAR(VAR_coefficients)
       Sigma_epsilon<-diag(N)
+      seeds_gen<-sample(1e8, M)
+      seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
       sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
                        init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads)
+                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
       saveRDS(sim, file=paste0("regular_N",N,"_T",T_,"_PI",PIconstant,"_switching_signs.RDS"))
     }
   }

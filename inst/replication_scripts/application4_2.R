@@ -5,7 +5,7 @@ library(HDLPrepro) #1.0.0
 # in case the following packages are not installed, run:
 #install.packages(c("ggplot2", "ggpubr", "ggpattern", "reshape2"))
 #devtools::install_github("RobertAdamek/desla")
-library(desla) #0.2.0
+library(desla) #0.3.0
 library(ggplot2) #3.4.2
 library(ggpubr) #0.6.0
 library(ggpattern) #1.0.1
@@ -20,6 +20,7 @@ hmax=20 # maximum horizon - the x axis of the plot will be 0:hmax
 lags=40 # number of lags included in the local projection equations
 PIconstant=0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
 threads<-parallel::detectCores() # the number of cores used in parallel computation 
+set.seed(1) # seed which controls the random number generation for reproducibility. We use set.seed(1) in our application
 ################################################################################
 # estimating these HDLPs can take a few minutes
 
@@ -149,7 +150,8 @@ dummies[,4]<-(1-dc$lag_slack)*(1-dc$lag_recession)
 hmax=20 # maximum horizon - the x axis of the plot will be 0:hmax
 lags=4 # number of lags included in the local projection equations
 PIconstant=0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
-threads=detectCores() # the number of cores use in parallel computation 
+threads=parallel::detectCores() # the number of cores use in parallel computation 
+set.seed(1) # seed which controls the random number generation for reproducibility. We use set.seed(1) in our application
 ################################################################################
 
 # estimating these HDLPs can take up to a minute

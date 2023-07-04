@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // simulate_LP
-List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned int& LP_lags, const unsigned int& hmax, const arma::cube& VAR_coefficients, const arma::mat& Sigma_epsilon, const arma::vec irf_1to1, const bool& init_partial, const arma::vec z_quantiles, const arma::vec chi2_quantiles, const int& selection, const double& PIconstant, const bool& progress_bar, bool OLS, unsigned int threads);
-RcppExport SEXP _HDLPrepro_simulate_LP(SEXP MSEXP, SEXP T_SEXP, SEXP LP_lagsSEXP, SEXP hmaxSEXP, SEXP VAR_coefficientsSEXP, SEXP Sigma_epsilonSEXP, SEXP irf_1to1SEXP, SEXP init_partialSEXP, SEXP z_quantilesSEXP, SEXP chi2_quantilesSEXP, SEXP selectionSEXP, SEXP PIconstantSEXP, SEXP progress_barSEXP, SEXP OLSSEXP, SEXP threadsSEXP) {
+List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned int& LP_lags, const unsigned int& hmax, const arma::cube& VAR_coefficients, const arma::mat& Sigma_epsilon, const arma::vec irf_1to1, const bool& init_partial, const arma::vec z_quantiles, const arma::vec chi2_quantiles, const int& selection, const double& PIconstant, const bool& progress_bar, bool OLS, unsigned int threads, arma::vec seeds_gen, arma::cube seeds_DL);
+RcppExport SEXP _HDLPrepro_simulate_LP(SEXP MSEXP, SEXP T_SEXP, SEXP LP_lagsSEXP, SEXP hmaxSEXP, SEXP VAR_coefficientsSEXP, SEXP Sigma_epsilonSEXP, SEXP irf_1to1SEXP, SEXP init_partialSEXP, SEXP z_quantilesSEXP, SEXP chi2_quantilesSEXP, SEXP selectionSEXP, SEXP PIconstantSEXP, SEXP progress_barSEXP, SEXP OLSSEXP, SEXP threadsSEXP, SEXP seeds_genSEXP, SEXP seeds_DLSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,13 +32,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const bool& >::type progress_bar(progress_barSEXP);
     Rcpp::traits::input_parameter< bool >::type OLS(OLSSEXP);
     Rcpp::traits::input_parameter< unsigned int >::type threads(threadsSEXP);
-    rcpp_result_gen = Rcpp::wrap(simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1, init_partial, z_quantiles, chi2_quantiles, selection, PIconstant, progress_bar, OLS, threads));
+    Rcpp::traits::input_parameter< arma::vec >::type seeds_gen(seeds_genSEXP);
+    Rcpp::traits::input_parameter< arma::cube >::type seeds_DL(seeds_DLSEXP);
+    rcpp_result_gen = Rcpp::wrap(simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1, init_partial, z_quantiles, chi2_quantiles, selection, PIconstant, progress_bar, OLS, threads, seeds_gen, seeds_DL));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_HDLPrepro_simulate_LP", (DL_FUNC) &_HDLPrepro_simulate_LP, 15},
+    {"_HDLPrepro_simulate_LP", (DL_FUNC) &_HDLPrepro_simulate_LP, 17},
     {NULL, NULL, 0}
 };
 

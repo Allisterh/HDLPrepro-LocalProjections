@@ -7,7 +7,7 @@ library(HDLPrepro) #1.0.0
 #devtools::install_github("RobertAdamek/desla")
 library(ggplot2) #3.4.2
 library(ggpubr) #0.6.0
-library(desla) #0.2.0
+library(desla) #0.3.0
 
 data("CDbmedium") # to see how this dataset was made, see the script "processing_FREDMD.R"
 
@@ -16,6 +16,7 @@ hmax<-49 # maximum horizon - the x axis of the plot will be 0:hmax
 lags<-13 # number of lags included in the local projection equations
 PI_constant<-0.4 # this is the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
 threads<-parallel::detectCores() # the number of cores used in parallel computation 
+set.seed(1) # seed which controls the random number generation for reproducibility. We use set.seed(1) in our application
 ################################################################################
 
 # estimation --------------------------------------------------------------

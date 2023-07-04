@@ -4,7 +4,7 @@ library(HDLPrepro) #1.0.0
 
 # in case the following package is not installed, run:
 #devtools::install_github("RobertAdamek/desla")
-library(desla) #0.2.0
+library(desla) #0.3.0
 
 
 

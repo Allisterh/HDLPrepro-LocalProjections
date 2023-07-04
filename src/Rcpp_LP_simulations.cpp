@@ -1,6 +1,8 @@
 #include <RcppArmadillo.h>
 #include <math.h>
 // [[Rcpp::depends(RcppArmadillo)]]
+#include <sitmo.h>      // SITMO for C++98 & C++11 PPRNG
+// [[Rcpp::depends(sitmo)]]
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -394,6 +396,38 @@ arma::uvec unique_match(arma::uvec& minusj, arma::uvec& Hminusj){
     }
   }
   return ret;
+}
+
+arma::mat custom_rnorm_sitmo(const unsigned int& r, const unsigned int& c, const unsigned int& active_seed_,
+                             const double& mu = 0, const double& sd = 1) {
+  uint32_t active_seed = static_cast<uint32_t>(active_seed_);
+  sitmo::prng eng( active_seed );
+  unsigned int length;
+  if((r*c)%2 == 0){
+    length = r*c;
+  }else{
+    length=r*c+1;
+  }
+  arma::vec draw(length);
+  //arma::vec draw32(length);
+  for(unsigned int i=0; i<length/2; i++){
+    //turn 32 bit random number to uniform, and Box-Muller transform into gaussian
+    double u1 = double(eng())/sitmo::prng::max();
+    double u2 = double(eng())/sitmo::prng::max();
+    draw(2*i) = sqrt(-2*log(u1))*cos(2*datum::pi*u2);
+    draw(2*i+1) = sqrt(-2*log(u1))*sin(2*datum::pi*u2);
+    
+  }
+  //const arma::mat Z = arma::mat(draw.begin(), r, c, false, true);
+  arma::mat Z(r,c);
+  unsigned int count=0;
+  for(unsigned int i=0; i<r; i++){
+    for(unsigned int j=0; j<c; j++){
+      Z(i,j)=draw(count);
+      count++;
+    }
+  }
+  return (Z);
 }
 
 arma::vec q_sim_mvnorm_sparse_chol_shrink(const arma::mat& Sigma, const int& S, const arma::vec& q, const double& M = 0.0001) {
@@ -905,9 +939,88 @@ selection_output selectPI_new(const mat& betahats, const mat& X, const vec& y, c
   return ret;
 }
 
+selection_output selectPI_seed(const mat& betahats, const mat& X, const vec& y, const arma::uvec& H, const bool& partial, const vec& grid, const unsigned int& N, const unsigned int& T_, const unsigned int& gridsize, const double& nonzero_limit, const double& c, const double& alpha, unsigned int active_seed){
+  unsigned int K=15; //max iterations
+  double improvement_threshold=0.01; //if the % change in lambda is less than this, stop iterating
+  unsigned int B=1000; //how many simulations are used to estimate the quantiles of the gaussian maximum
+  partial_lasso_output PLO;
+  double ybar=mean(y);
+  arma::vec uhat= y-ybar;
+  double lambda_old;
+  lambda_old=grid(0);
+  double lambda;
+  arma::mat LRCovariance;
+  arma::vec Gmax(B);
+  arma::mat Gs;
+  arma::vec Gmeans(N);
+  double cutoff;
+  arma::vec lambda_as_vec(1);
+  //arma::uvec H(1); H(0)=0;
+  arma::vec eigval(N);
+  arma::mat eigvec(N,N);
+  arma::mat sqrt_cov(N,N);
+  arma::mat sqrt_diag_eigval(N,N,fill::zeros);
+  //arma::mat random_gaussians=randn(N,B);
+  arma::mat random_gaussians=custom_rnorm_sitmo(N,B,active_seed,0,1);//with sitmo
+  unsigned int iteration=K;
+  //loop where we iterate to find the best lambda
+  for(unsigned int k=0; k<K; k++){
+    if(c!=0){
+      //LRCovariance=LRVestimator(uhat, X, N, T_, N, 0.5, 2); //get an estimate for the long run covariance matrix
+      LRCovariance=LRVestimator(uhat, X, N, T_, N, 0, 0);
+      eig_sym(eigval, eigvec, LRCovariance);
+      for(unsigned int i=0; i<N; i++){
+        sqrt_diag_eigval(i,i)=sqrt(max(0.0,eigval(i))); //negative eigenvalues replaced by 0
+      }
+      sqrt_cov=eigvec*sqrt_diag_eigval;
+      Gs=sqrt_cov*random_gaussians; //generate the correlated gaussians
+      for(unsigned int b=0; b<B; b++){
+        Gmax(b)=max(abs(Gs.col(b)));
+      }
+      Gmax=sort(Gmax);
+      cutoff=Gmax(B*(1-alpha)); //1-alpha quantile of the randomly generated data
+      lambda=c*cutoff/double(sqrt(double(T_))); ///not yet multiplying by 4 here
+    }else{
+      lambda=0;
+    }
+    if(abs(lambda-lambda_old)/lambda_old<improvement_threshold){ //Check if the improvement is big enough
+      iteration=k;
+      k=K; //no more loops after this, but finish the rest of this loop
+    }
+    lambda_as_vec(0)=lambda;
+    PLO=partial_lasso(X, y, H, partial, lambda_as_vec, pow(10,-4), 3);
+    uhat=y-X*PLO.betahats;
+    lambda_old=lambda;
+  }
+  //finding the equivalent of lambda pos
+  unsigned int pos=0;
+  for(unsigned int i=0;i<gridsize;i++){
+    if(grid(i)<lambda){
+      break;
+    }else{
+      pos++;
+    }
+  }
+  arma::uvec nonzero_pos=find(PLO.betahats);
+  unsigned int nonzero=nonzero_pos.n_elem;
+  
+  selection_output ret;
+  ret.betahat=PLO.betahats;
+  ret.criterion_value=iteration;
+  ret.lambda=lambda;
+  ret.lambda_pos=pos;
+  ret.nonzero=nonzero;
+  ret.nonzero_limit=0;
+  ret.residual=uhat;
+  ret.selection_type=4;
+  ret.SSR=as_scalar(uhat.t()*uhat);
+  ret.nonzero_pos=nonzero_pos;
+  return ret;
+}
+
 
 partial_lasso_selected_output partial_lasso_selected(const arma::mat& X, const arma::colvec& y, const arma::uvec& H, const bool& partial, const arma::vec& grid, const int& selection_type, const double& nonzero_limit,
-                                                     const double& opt_threshold, const int& opt_type, const double& PIconstant, const double& PIprobability){
+                                                     const double& opt_threshold, const int& opt_type, const double& PIconstant, const double& PIprobability, unsigned int active_seed){
   partial_lasso_output PL=partial_lasso(X, y, H, partial, grid, opt_threshold, opt_type);
   selection_output S;
   switch(selection_type) {
@@ -921,11 +1034,13 @@ partial_lasso_selected_output partial_lasso_selected(const arma::mat& X, const a
     S=selectEBIC(PL.betahats, X, y, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit);
     break;
   case 4: //"PI"
-    S=selectPI(PL.betahats, X, y, H, partial, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit, PIconstant, PIprobability);
+    //S=selectPI(PL.betahats, X, y, H, partial, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit, PIconstant, PIprobability);
+    S=selectPI_seed(PL.betahats, X, y, H, partial, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit, PIconstant, PIprobability, active_seed);
     break;
   default:
     //warning("Warning: Invalid selection_type, choosing type 4");
-    S=selectPI(PL.betahats, X, y, H, partial, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit, PIconstant, PIprobability);
+    //S=selectPI(PL.betahats, X, y, H, partial, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit, PIconstant, PIprobability);
+    S=selectPI_seed(PL.betahats, X, y, H, partial, grid, PL.N, PL.T_, PL.gridsize,nonzero_limit, PIconstant, PIprobability, active_seed);
   }
   partial_lasso_selected_output ret;
   ret.partial=partial;
@@ -965,14 +1080,13 @@ struct nodewise_manual{
 
 partial_desparsified_lasso_output partial_desparsified_lasso(const arma::mat& X, const arma::colvec& y, const arma::uvec& H, const bool& init_partial, const bool& nw_partials, const arma::vec& init_grid, const arma::mat& nw_grids,
                                                              const int& init_selection_type, const arma::vec& nw_selection_types,const double& init_nonzero_limit, const arma::vec& nw_nonzero_limits,
-                                                             const double& init_opt_threshold, const arma::vec& nw_opt_thresholds, const int& init_opt_type, const arma::vec& nw_opt_types, const double& PIconstant, const double& PIprobability,
+                                                             const double& init_opt_threshold, const arma::vec& nw_opt_thresholds, const int& init_opt_type, const arma::vec& nw_opt_types, const double& PIconstant, const double& PIprobability, arma::vec seeds,
                                                              //Nullable<NumericMatrix> manual_Thetahat_, Nullable<NumericMatrix> manual_Upsilonhat_inv_, Nullable<NumericMatrix> manual_nw_residuals_
                                                              nodewise_manual nm){
   
-  
+  unsigned int h=H.n_elem;
   partial_lasso_selected_output init_L=partial_lasso_selected(X, y, H, init_partial, init_grid, init_selection_type, init_nonzero_limit,
-                                                              init_opt_threshold, init_opt_type, PIconstant, PIprobability);
-  unsigned int h=init_L.h;
+                                                              init_opt_threshold, init_opt_type, PIconstant, PIprobability, seeds(h));
   unsigned int N=init_L.N;
   unsigned int T_=init_L.T_;
   unsigned int j, i;
@@ -1016,7 +1130,7 @@ partial_desparsified_lasso_output partial_desparsified_lasso(const arma::mat& X,
       nw_opt_threshold=nw_opt_thresholds(i);
       nw_opt_type=nw_opt_types(i);
       nw_L=partial_lasso_selected(Xminusj, x_j, nw_H, nw_partial, nw_grid, nw_selection_type, nw_nonzero_limit,
-                                  nw_opt_threshold, nw_opt_type, PIconstant, PIprobability);
+                                  nw_opt_threshold, nw_opt_type, PIconstant, PIprobability, seeds(i));
       tauhat_j=nw_L.SSR/double(T_)+2*nw_L.lambda*sum(abs(nw_L.betahat));
       Upsilonhat_inv(i,i)= 1.0/tauhat_j;
       Gammahat(i,j)= 1;
@@ -1102,12 +1216,12 @@ partial_desparsified_lasso_output partial_desparsified_lasso(const arma::mat& X,
 partial_desparsified_lasso_inference_output partial_desparsified_lasso_inference(const arma::mat& X, const arma::colvec& y, const arma::uvec& H, const bool& demean, const bool& scale, const bool& init_partial, const bool& nw_partials,
                                                                                  const arma::vec& init_grid, const arma::mat& nw_grids, const int& init_selection_type, const arma::vec& nw_selection_types,
                                                                                  const double& init_nonzero_limit, const arma::vec& nw_nonzero_limits, const double& init_opt_threshold, const arma::vec& nw_opt_thresholds, const int& init_opt_type, const arma::vec& nw_opt_types,
-                                                                                 const double& LRVtrunc, const double& T_multiplier, const arma::vec& z_quantiles, const arma::vec& chi2_quantiles, const arma::mat& R, const arma::vec& q, const double& PIconstant, const double& PIprobability,
+                                                                                 const double& LRVtrunc, const double& T_multiplier, const arma::vec& z_quantiles, const arma::vec& chi2_quantiles, const arma::mat& R, const arma::vec& q, const double& PIconstant, const double& PIprobability, arma::vec seeds,
                                                                                  //Nullable<NumericMatrix> manual_Thetahat_, Nullable<NumericMatrix> manual_Upsilonhat_inv_, Nullable<NumericMatrix> manual_nw_residuals_
                                                                                  nodewise_manual nm){
   standardize_output s=standardize(X, y, demean, scale);
   partial_desparsified_lasso_output PDL=partial_desparsified_lasso(s.X_scaled, s.y_scaled, H, init_partial, nw_partials, init_grid, nw_grids, init_selection_type, nw_selection_types,
-                                                                   init_nonzero_limit, nw_nonzero_limits, init_opt_threshold, nw_opt_thresholds, init_opt_type, nw_opt_types, PIconstant, PIprobability,
+                                                                   init_nonzero_limit, nw_nonzero_limits, init_opt_threshold, nw_opt_thresholds, init_opt_type, nw_opt_types, PIconstant, PIprobability, seeds,
                                                                    //manual_Thetahat_, manual_Upsilonhat_inv_, manual_nw_residuals_
                                                                    nm);
   arma::vec bhat_1_unscaled=unscale(s, PDL.bhat_1, H, demean, scale);
@@ -1295,7 +1409,7 @@ reg_output OLS_HAC(const arma::mat& X, const arma::colvec& y, const arma::uvec& 
 }
 
 
-arma::mat generate_correlated_normals(const unsigned int& T_, const arma::mat Sigma){
+arma::mat generate_correlated_normals(const unsigned int& T_, const arma::mat Sigma, const unsigned int& active_seed){
   unsigned int N=Sigma.n_rows;
   arma::vec eigval(N);
   arma::mat eigvec(N,N);
@@ -1305,7 +1419,8 @@ arma::mat generate_correlated_normals(const unsigned int& T_, const arma::mat Si
     sqrt_diag_eigval(i,i)=sqrt(max(0.0,eigval(i))); //negative eigenvalues replaced by 0
   }
   arma::mat sqrt_cov=eigvec*sqrt_diag_eigval;
-  arma::mat Gs=sqrt_cov*randn(N,T_); //generate the correlated gaussians
+  //arma::mat Gs=sqrt_cov*randn(N,T_); //generate the correlated gaussians // old line
+  arma::mat Gs=sqrt_cov*custom_rnorm_sitmo(N,T_, active_seed,0,1); //generate the correlated gaussians //new line with sitmo
   return Gs.t();
 }
 
@@ -1314,13 +1429,13 @@ struct generate_VAR_output{
   arma::mat epsilons;
 };
 
-generate_VAR_output generate_VAR(const unsigned int& T_, const arma::cube& VAR_coefficients, const arma::mat& Sigma_epsilon){
+generate_VAR_output generate_VAR(const unsigned int& T_, const arma::cube& VAR_coefficients, const arma::mat& Sigma_epsilon, const unsigned int& active_seed){
   unsigned int burnin=100;
   unsigned int VAR_order=VAR_coefficients.n_slices;
   unsigned int N=VAR_coefficients.n_rows;
   arma::vec vec_sum(N,fill::zeros);
   //generate the VAR innovations from the shocks, and the factors from the VAR
-  arma::mat epsilons=generate_correlated_normals(T_+burnin+VAR_order,Sigma_epsilon);
+  arma::mat epsilons=generate_correlated_normals(T_+burnin+VAR_order,Sigma_epsilon, active_seed);
   arma::mat X(T_+burnin+VAR_order,N,fill::zeros);
   for(unsigned int t=VAR_order; t<T_+burnin+VAR_order; t++){
     vec_sum.zeros();
@@ -1355,6 +1470,8 @@ generate_VAR_output generate_VAR(const unsigned int& T_, const arma::cube& VAR_c
 //' @param progress_bar boolean whether a progress bar should be shown
 //' @param OLS boolean whether OLS should be used for estimation instead of the desparsified lasso
 //' @param threads integer number of cores used in parallel computation
+//' @param seeds_gen vector of size M containing the random number seeds for generating the simulation DGP
+//' @param seeds_DL array/cube of size 2x(hmax+1)xM containing the random number seeds for the plug-in lambda estimator of desparsified lasso
 //'@return Returns a list with the following elements: \cr
 //'\item{\code{intervals}}{array/cube of confidence intervals of the impulse responses}
 //'\item{\code{manual_Thetahat}}{array/cube of the Theta hat matrices}
@@ -1362,7 +1479,7 @@ generate_VAR_output generate_VAR(const unsigned int& T_, const arma::cube& VAR_c
 // [[Rcpp::export]]
 List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned int& LP_lags, const unsigned int& hmax, const arma::cube& VAR_coefficients, const arma::mat& Sigma_epsilon, const arma::vec irf_1to1,
                  const bool& init_partial, const arma::vec z_quantiles, const arma::vec chi2_quantiles, const int& selection, const double& PIconstant,
-                 const bool& progress_bar, bool OLS, unsigned int threads){
+                 const bool& progress_bar, bool OLS, unsigned int threads, arma::vec seeds_gen, arma::cube seeds_DL){
   
   unsigned int N=VAR_coefficients.n_rows;
   
@@ -1378,7 +1495,7 @@ List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned i
 # pragma omp parallel for
   for(unsigned int m=0; m<M;m++){
     //first, generate data from the SDFM. 
-    generate_VAR_output V= generate_VAR(T_, VAR_coefficients, Sigma_epsilon);
+    generate_VAR_output V= generate_VAR(T_, VAR_coefficients, Sigma_epsilon, seeds_gen(m));
     
     //second, depending on which irf we want, define r_, x, y, q_, y_predetermined, cumulate_y. Define these as arma objects rather than Rcpp ones,
     //so we don't break the parallelization.
@@ -1460,7 +1577,7 @@ List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned i
       partial_desparsified_lasso_inference_output pdli=partial_desparsified_lasso_inference(regressors_trimmed, dependent_trimmed, H, true, true, init_partial, nw_partials,
                                                                                             g.init_grid, g.nw_grids, init_selection_type, nw_selection_types,
                                                                                             init_nonzero_limit, nw_nonzero_limits, init_opt_threshold, nw_opt_thresholds, init_opt_type, nw_opt_types,
-                                                                                            0, 0, z_quantiles, chi2_quantiles, R, Q, PIconstant, 0.05,
+                                                                                            0, 0, z_quantiles, chi2_quantiles, R, Q, PIconstant, 0.05, seeds_DL.subcube( 0, 0, m, H.n_elem, 0, m),
                                                                                             nm);
       mThetahat=pdli.Thetahat;
       mUpsilonhat_inv=pdli.Upsilonhat_inv;
@@ -1501,7 +1618,7 @@ List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned i
         partial_desparsified_lasso_inference_output pdli_p=partial_desparsified_lasso_inference(regressors_trimmed_p, dependent_trimmed_p, H, true, true, init_partial, nw_partials,
                                                                                                 g_p.init_grid, g_p.nw_grids, init_selection_type, nw_selection_types,
                                                                                                 init_nonzero_limit, nw_nonzero_limits, init_opt_threshold, nw_opt_thresholds, init_opt_type, nw_opt_types,
-                                                                                                0, 0, z_quantiles, chi2_quantiles, R, Q, PIconstant, 0.05,
+                                                                                                0, 0, z_quantiles, chi2_quantiles, R, Q, PIconstant, 0.05, seeds_DL.subcube( 0, h, m, H.n_elem, h, m),
                                                                                                 nm_p);
         d_p.Omegahat=pdli_p.Omegahat;
         d_p.z_quantiles=pdli_p.z_quantiles;
