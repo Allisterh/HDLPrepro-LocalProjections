@@ -18,6 +18,8 @@
 #' @param progress_bar boolean whether a progress bar should be shown
 #' @param OLS boolean whether OLS should be used for estimation instead of the desparsified lasso
 #' @param threads integer number of cores used in parallel computation
+#' @param seeds_gen vector of size M containing the random number seeds for generating the simulation DGP
+#' @param seeds_DL array/cube of size 2x(hmax+1)xM containing the random number seeds for the plug-in lambda estimator of desparsified lasso
 #'@return Returns a list with the following elements: \cr
 #'\item{\code{intervals}}{array/cube of confidence intervals of the impulse responses}
 #'\item{\code{manual_Thetahat}}{array/cube of the Theta hat matrices}
