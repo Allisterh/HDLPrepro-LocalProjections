@@ -11,8 +11,9 @@ library(desla) #0.3.0
 setwd("your/path/here")
 ################################ settings ######################################
 M=1000 # number of simulation replications
-# Ts=c(200, 400, 600) # These are the default sample sizes considered in the simulation. To change them, pass a different vector to the parApply function on line 30 below
+# Ts=c(200, 400, 600) # These are the default sample sizes considered in the simulation. To change them, pass a different vector to the parApply function on line 34 below
 threads = parallel::detectCores()-2 # the number of cores used in parallel computation 
+set.seed(1) # seed which controls the random number generation for reproducibility. We use set.seed(1) in this simulation
 ################################################################################
 # These simulations could take SEVERAL DAYS to run
 
@@ -23,12 +24,12 @@ parallel::clusterEvalQ(cl, library(desla))
 for(setup in c("pc_OLS", "sWF_lasso")){
   # these commands read in the relevant DFM parameters and IRFs from the package, which is provided to each worker via  parallel::clusterApply(cl, library(HDLPrepro))
   # If you want to use different parameters from your environment, you can pass them to the workers via  parallel::clusterExport(cl, envir=environment()) commented out above, and use these commented commands:
+  #dfm<-get(paste0(setup,"_DFM"))
+  #irf<-get(paste0(setup,"_IRF"))
   data(list=paste0(setup,"_DFM"))
   dfm<-get(paste0(setup,"_DFM"))
   data(list=paste0(setup,"_IRF"))
   irf<-get(paste0(setup,"_IRF"))
-  #dfm<-getExportedValue("HDLPrepro", paste0(setup,"_DFM"))
-  #irf<-getExportedValue("HDLPrepro", paste0(setup,"_IRF"))
   
   simulation<- parallel::parLapply(cl = cl, X=vector("list",M), fun=HDLPrepro::one_replication_lean, DFM=dfm, IRF=irf) # for different sample sizes, include them as a vector in an optional argument Ts=...
   saveRDS(simulation, paste0(setup,"_sim.RData"))
