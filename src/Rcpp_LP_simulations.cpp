@@ -1637,8 +1637,8 @@ List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned i
     sim_betahats.slice(m)=betahats;
     p.increment();
   }
-  return List::create(Named("intervals")=sim_intervals,
-                      Named("manual_Thetahat")=sim_manual_Thetahat,
-                      Named("betahats")=sim_betahats
+  return List::create(Named("intervals")=sim_intervals//,
+                      //Named("manual_Thetahat")=sim_manual_Thetahat,
+                      //Named("betahats")=sim_betahats
   );
 }

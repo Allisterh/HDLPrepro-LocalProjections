@@ -54,6 +54,10 @@ simulate_LP(
 \item{OLS}{boolean whether OLS should be used for estimation instead of the desparsified lasso}
 
 \item{threads}{integer number of cores used in parallel computation}
+
+\item{seeds_gen}{vector of size M containing the random number seeds for generating the simulation DGP}
+
+\item{seeds_DL}{array/cube of size 2x(hmax+1)xM containing the random number seeds for the plug-in lambda estimator of desparsified lasso}
 }
 \value{
 Returns a list with the following elements: \cr

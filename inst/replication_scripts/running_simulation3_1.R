@@ -21,7 +21,6 @@ threads=parallel::detectCores()-2 # the number of cores used in parallel computa
 alphas=0.05 # desired level of the test; equivalently, (1-alpha)% confidence intervals 
 z_quantiles=qnorm(alphas/2.0,0.0,1.0,FALSE,FALSE); # quantiles of the Normal distribution associated with alpha
 chi2_quantiles=qchisq(alphas,1,FALSE,FALSE); # quantiles of the Chi-squared distribution associated with alpha
-set.seed(1) # seed which controls the random number generation for reproducibility. We use set.seed(1) in our simulation
 ################################################################################
 
 
@@ -31,6 +30,8 @@ set.seed(1) # seed which controls the random number generation for reproducibili
 # First set: partial DL ---------------------------------------------------
 ################################ settings ######################################
 init_partial=TRUE # should the parameters of interest remain unpenalized in the first step?
+################################################################################
+set.seed(1) 
 ################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
@@ -56,6 +57,8 @@ for(n in 1:length(Ns)){
 ################################ settings ######################################
 init_partial=FALSE # should the parameters of interest remain unpenalized in the first step?
 ################################################################################
+set.seed(2) 
+################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
     for(pi in 1:length(PIs)){
@@ -80,6 +83,8 @@ for(n in 1:length(Ns)){
 ################################ settings ######################################
 init_partial=TRUE # should the parameters of interest remain unpenalized in the first step?
 ################################################################################
+set.seed(3) 
+################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
     for(pi in 1:length(PIs)){
@@ -103,6 +108,8 @@ for(n in 1:length(Ns)){
 # Fourth set: regular DL switching ----------------------------------------
 ################################ settings ######################################
 init_partial=FALSE # should the parameters of interest remain unpenalized in the first step?
+################################################################################
+set.seed(4) 
 ################################################################################
 for(n in 1:length(Ns)){
   for(t in 1:length(Ts)){
