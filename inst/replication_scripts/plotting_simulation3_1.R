@@ -67,7 +67,9 @@ for(n in 1:length(Ns)){
 ggarrange(P[[1]],P[[2]],P[[3]],P[[4]],P[[5]],P[[6]],P[[7]],P[[8]],P[[9]],
           ncol=3, nrow=3, legend="right",common.legend = TRUE,legend.grob = get_legend(P[[1]]))
 #ggsave(filename="sim_coverage.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
-
+ggarrange(P[[4]],P[[5]],P[[6]],
+          ncol=3, nrow=1, legend="right",common.legend = TRUE,legend.grob = get_legend(P[[1]]))
+#ggsave(filename="sim_coverage_middle_row.pdf",device="pdf",width=18, height = 6, units="cm",dpi=1000)
 
 # plot interval widths ----------------------------------------------------
 # code for Figure S.2 in the supplementary appendix
