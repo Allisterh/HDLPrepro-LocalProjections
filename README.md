@@ -55,7 +55,7 @@ the package versions with which we ran the code ourselves:
 - `ggplot2` (3.4.2)
 - `ggpubr` (0.6.0)
 - `HDLPrepro` (1.0.0)
-- `readxl` (1.4.1)
+- `readxl` (1.4.3)
 - `reshape2` (1.4.4)
 - `xtable` (1.8-4)
 
