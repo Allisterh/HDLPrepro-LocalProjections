@@ -74,6 +74,11 @@ replication package using the `remotes` package. For example, to install
 remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.r-project.org")
 ```
 
+We also plan to maintain this package to be compatible with future
+versions of R, but if this is not the case, we ran all applications and
+simulations on R version 4.3.1 (2023-06-16 ucrt) – “Beagle Scouts”. Past
+versions of R can be obtained from <https://cran.r-project.org/>.
+
 The scripts included are as follows:
 
 - Simulations in Section 3.1: *Sparse Structural VAR Model*
