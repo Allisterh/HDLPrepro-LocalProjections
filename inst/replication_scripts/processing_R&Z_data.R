@@ -4,7 +4,7 @@ library(HDLPrepro) #1.0.0
 
 # in case the following packages are not installed, run:
 #install.packages(c("readxl", "dplyr"))
-library(readxl) #1.4.1
+library(readxl) #1.4.3
 library(dplyr) #1.1.2
 
 # We obtained the data from the webpage of Valerie A. Ramey: https://econweb.ucsd.edu/~vramey/research.html#govt.
