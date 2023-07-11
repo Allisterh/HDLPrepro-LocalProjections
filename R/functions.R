@@ -468,7 +468,7 @@ VAR_est <- function(X, p = 1) {
 
 lasso_VAR_est <- function(X, p=1){
   # Assuming your data matrix is in the object Y, please use this code then to estimate the VAR sparsely with p=1 lag:
-  fit = bigtime::sparseVAR(Y = X, p = p, VARpen = 'L1', selection = 'bic', verbose = F, check_std = F)
+  fit = bigtime::sparseVAR(Y = X, p = p, VARpen = 'L1', selection = 'bic', check_std = F)
   N<-ncol(X)
   Phi<-matrix(0, N*p, N)
   for(i in 1:p){

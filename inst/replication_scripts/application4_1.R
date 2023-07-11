@@ -1,5 +1,6 @@
 # This script estimates the models and plots the results of our application in Section 4.1, using the same FRED-MD processed data as that used in Section 3.2
 rm(list=ls())
+start_time<-Sys.time()
 library(HDLPrepro) #1.0.0
 
 # in case the following packages are not installed, run:
@@ -9,7 +10,21 @@ library(ggplot2) #3.4.2
 library(ggpubr) #0.6.0
 library(desla) #0.3.0
 
-data("CDbmedium") # to see how this dataset was made, see the script "processing_FREDMD.R"
+#use this command set the directory in which the plot will be saved
+#setwd("your/path/here")
+
+#if you want to use the processed FREDMD data from a local folder, load_sim_from_local_folder should be set to TRUE, and the path set above MUST be the folder where the data is stored
+#if load_sim_from_local_folder is FALSE, it will load the processed FREDMD data saved in the package  
+load_sim_from_local_folder <- TRUE
+
+if(load_sim_from_local_folder){
+  local_path <- getwd()
+  CDbmedium <- readRDS(paste0(local_path,"/CDbmedium.RData"))
+}else{
+  internal_path<-system.file("extdata", package="HDLPrepro", mustWork = TRUE)
+  CDbmedium <- readRDS(paste0(internal_path,"/CDbmedium.RData"))
+}
+#to see how the dataset "CDbmedium" was made, see the script "processing_FREDMD.R"
 
 ################################ settings ######################################
 hmax<-49 # maximum horizon - the x axis of the plot will be 0:hmax
@@ -43,11 +58,17 @@ HDLP_IP_irf<-HDLP(r=cbind(other_slow,CPI), x=FFR, y=IP, q=fast,
 HDLP_CPI_irf<-HDLP(r=cbind(other_slow,IP), x=FFR, y=CPI, q=fast,
                 y_predetermined = T, cumulate_y = T, hmax=hmax, lags=lags, threads=threads, PI_constant = PI_constant)
 
-# to avoid having to run the above, we include the results as data in the package
-#data("FAVAR_irfs")
-#data("HDLP_FFR_irf")
-#data("HDLP_IP_irf")
-#data("HDLP_CPI_irf")
+saveRDS(FAVAR_irfs, "FAVAR_irfs.RData")
+saveRDS(HDLP_FFR_irf, "HDLP_FFR_irf.RData")
+saveRDS(HDLP_IP_irf, "HDLP_IP_irf.RData")
+saveRDS(HDLP_CPI_irf, "HDLP_CPI_irf.RData")
+
+# to avoid having to run the above, we include the results as data in the package - read them in by uncommenting the below
+#internal_path<-system.file("extdata", package="HDLPrepro", mustWork = TRUE)
+#FAVAR_irfs<-readRDS(paste0(local_path,"/FAVAR_irfs.RData"))
+#HDLP_FFR_irf<-readRDS(paste0(local_path,"/HDLP_FFR_irf.RData"))
+#HDLP_IP_irf<-readRDS(paste0(local_path,"/HDLP_IP_irf.RData"))
+#HDLP_CPI_irf<-readRDS(paste0(local_path,"/HDLP_CPI_irf.RData"))
 
 # plotting ----------------------------------------------------------------
 # code for Figure 3
@@ -104,5 +125,8 @@ first_row<-ggarrange(p4,p5,p6,nrow=1)
 first_row<-annotate_figure(first_row,top = text_grob("HDLP", color = "black", face = "bold", size = 14))
 
 ggarrange(first_row,second_row, ncol=1)
-#ggsave(filename="application4_1.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+ggsave(filename="fig3.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
 
+# noting the time ---------------------------------------------------------
+end_time <- Sys.time()
+write(paste0("start: ",start_time,", end: ", end_time,", difference: ", end_time-start_time), file="runtime_application4_1.txt")

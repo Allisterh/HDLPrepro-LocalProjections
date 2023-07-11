@@ -1,5 +1,6 @@
 # This script processes the Section 3.2 simulation files and generates the plots in our paper
 rm(list=ls())
+start_time<-Sys.time()
 library(HDLPrepro) #1.0.0
 
 # in case the following packages are not installed, run:
@@ -9,35 +10,49 @@ library(reshape2) #1.4.4
 library(ggpattern) #1.0.1
 library(ggpubr) #0.6.0
 
-# This sets the working directory to where our simulation results are stored in the package.
-# If you ran the simulations using the file "running_simulation3_1.R", you should set the directory to wherever you saved the simulation outputs then
-setwd(system.file("extdata", package="HDLPrepro", mustWork = TRUE))
-for(setup in c("pc_OLS", "sWF_lasso")){
-  assign(paste0(setup,"_sim"), readRDS(paste0(setup,"_sim.RData")))
+#use this command set the directory in which the plots will be saved
+#setwd("your/path/here")
+
+#if you want to plot simulations saved in a local folder, load_sim_from_local_folder should be set to TRUE, and the path set above MUST be the folder where the simulation outputs were stored
+#if load_sim_from_local_folder is FALSE, it will load our simulation results and calibration parameters saved in the package 
+load_sim_from_local_folder <- TRUE
+
+if(load_sim_from_local_folder){
+  local_path<-getwd()
+  for(setup in c("pc_OLS", "sWF_lasso")){
+    assign(paste0(setup,"_sim"), readRDS(paste0(local_path,"/",setup,"_sim.RData")))
+    assign(paste0(setup,"_DFM"), readRDS(paste0(local_path,"/",setup,"_DFM.RData")))
+    assign(paste0(setup,"_IRF"), readRDS(paste0(local_path,"/",setup,"_IRF.RData")))
+  }
+}else{
+  internal_path<-system.file("extdata", package="HDLPrepro", mustWork = TRUE)
+  for(setup in c("pc_OLS", "sWF_lasso")){
+    assign(paste0(setup,"_sim"), readRDS(paste0(internal_path,"/",setup,"_sim.RData")))
+    assign(paste0(setup,"_DFM"), readRDS(paste0(internal_path,"/",setup,"_DFM.RData")))
+    assign(paste0(setup,"_IRF"), readRDS(paste0(internal_path,"/",setup,"_IRF.RData")))
+  }
 }
 
 # plotting the "dense" DFM  -----------------------------------------------
 # code for Figure S.4 in the supplementary appendix
 plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
-#ggsave(filename="pc_OLS_models.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+ggsave(filename="figS4.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
 #code for Figure S.5 in the supplementary appendix
 plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
-#ggsave(filename="pc_OLS_lrvs.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+ggsave(filename="figS5.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
 
 # plotting the "sparse" DFM -----------------------------------------------
 # code for Figure 2
 plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
-#ggsave(filename="sWF_lasso_models.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+ggsave(filename="fig2.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
 # code for Figure S.6 in the supplementary appendix
 plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
-#ggsave(filename="sWF_lasso_lrvs.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+ggsave(filename="figS6.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
 
 
-# plotting the summary statistics comparing the dense and sparse D --------
+
 # code for Figure S.3 in the supplementary appendix
-# this loads the calibrated DFM parameters included in the package. If you computed your own with the script calibrating_DFM3_2.R, ignore these data() commands
-data("pc_OLS_DFM")
-data("sWF_lasso_DFM")
+
 pc_scaling<-sqrt(crossprod(pc_OLS_DFM$factors$F_hat)[1,1])
 dense_nonzeros<-apply(X=pc_OLS_DFM$factors$Lambda, MARGIN=2, FUN=function(x){sum(x!=0)})
 dense_l1<-apply(X=pc_OLS_DFM$factors$Lambda*pc_scaling, MARGIN=2, FUN=function(x){sum(abs(x))})
@@ -45,6 +60,7 @@ dense_l1<-apply(X=pc_OLS_DFM$factors$Lambda*pc_scaling, MARGIN=2, FUN=function(x
 sparse_nonzeros<-apply(X=sWF_lasso_DFM$factors$Lambda, MARGIN=2, FUN=function(x){sum(x!=0)})
 sparse_l1<-apply(X=sWF_lasso_DFM$factors$Lambda, MARGIN=2, FUN=function(x){sum(abs(x))})
 
+# plotting the summary statistics comparing the dense and sparse DFM --------
 nonz<-data.frame(factor=paste0("F",1:6), dense=dense_nonzeros, sparse=sparse_nonzeros)
 nonzero<-data.frame(factor=NULL, type=NULL)
 for(i in 1:nrow(nonz)){
@@ -121,4 +137,8 @@ bars<-ggarrange(p1, p2, common.legend = TRUE, legend="right")
 heatmaps<-ggarrange(p3,p4, common.legend=TRUE, legend="right")
 
 ggarrange(bars, heatmaps, ncol=1)
-#ggsave(filename="dense_vs_sparse_summary.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
+ggsave(filename="figS3.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
+
+# noting the time ---------------------------------------------------------
+end_time <- Sys.time()
+write(paste0("start: ",start_time,", end: ", end_time,", difference: ", end_time-start_time), file="runtime_plotting_simulation3_2.txt")

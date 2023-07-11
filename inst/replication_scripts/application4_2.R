@@ -1,5 +1,6 @@
 # This script estimates the models and plots the results of Section 4.2
 rm(list=ls())
+start_time<-Sys.time()
 library(HDLPrepro) #1.0.0
 
 # in case the following packages are not installed, run:
@@ -11,8 +12,19 @@ library(ggpubr) #0.6.0
 library(ggpattern) #1.0.1
 library(reshape2) #1.4.4
 
+#use this command set the directory in which the plots will be saved
+#setwd("your/path/here")
 
-data("dc")# to see how this dataset was made, see the script "processing_R&Z_data.R"
+load_sim_from_local_folder <- TRUE
+
+if(load_sim_from_local_folder){
+  local_path <- getwd()
+  dc <- readRDS(paste0(local_path,"/dc.RData"))
+}else{
+  internal_path<-system.file("extdata", package="HDLPrepro", mustWork = TRUE)
+  dc <- readRDS(paste0(internal_path,"/dc.RData"))
+}
+# to see how the dataset "dc" was made, see the script "processing_R&Z_data.R"
 
 # 40 lags -----------------------------------------------------------------
 ################################ settings ######################################
@@ -29,12 +41,10 @@ linear_y<-HDLP(r=NULL, x=dc$newsy, y=dc$y, q=cbind(dc$g,dc$taxy), lags=lags, hma
 nl_g<-HDLP(r=NULL, x=dc$newsy, y=dc$g, q=cbind(dc$y,dc$taxy), state_variables=dc$lag_slack, lags=lags, hmax=hmax, PI_constant=PIconstant, threads=threads)
 nl_y<-HDLP(r=NULL, x=dc$newsy, y=dc$y, q=cbind(dc$g,dc$taxy), state_variables=dc$lag_slack, lags=lags, hmax=hmax, PI_constant=PIconstant, threads=threads)
 
-
-# to avoid having to run the above, we include the results as data in the package
-#data("linear_g")
-#data("linear_y")
-#data("nl_g")
-#data("nl_y")
+saveRDS(linear_g, "linear_g.RData")
+saveRDS(linear_y, "linear_y.RData")
+saveRDS(nl_g, "nl_g.RData")
+saveRDS(nl_y, "nl_y.RData")
 
 # code for Figure 4
 g_df<-data.frame(mean_all=linear_g$intervals[,2,1], lb_all=linear_g$intervals[,1,1], ub_all=linear_g$intervals[,3,1],
@@ -136,7 +146,7 @@ p6<-ggplot(data=y_df, aes(x=Horizon)) +
   ylab("GDP")+theme_bw()
 
 ggarrange(p2,p3,p5,p6, common.legend = TRUE, legend="right")
-#ggsave(filename="40_lags_R&Z.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+ggsave(filename="fig4.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
 
 
 # two combined states -----------------------------------------------------
@@ -164,9 +174,8 @@ set.seed(1) # seed which controls the random number generation for reproducibili
                      state_variables=dummies, lags=lags, hmax=hmax, PI_constant=PIconstant, threads=threads)
 }
 
-# to avoid having to run the above, we include the results as data in the package
-#data("nl_g_4states")
-#data("nl_y_4states")
+saveRDS(nl_g_4states,"nl_g_4states.RData")
+saveRDS(nl_y_4states, "nl_y_4states.RData")
 
 # code for Figure 5
 theme_update(plot.title = element_text(hjust = 0.5))
@@ -320,4 +329,8 @@ second_col<-ggarrange(p2,p6, nrow=2)
 second_col_a<-annotate_figure(second_col,top = text_grob("No Recession", color = "black", face = "bold", size = 14))
 
 ggarrange(plotlist=list(p1,p2,p5,p6), legend="right", common.legend = TRUE)
-#ggsave(filename="4_states_R&Z.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+ggsave(filename="fig5.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+
+# noting the time ---------------------------------------------------------
+end_time <- Sys.time()
+write(paste0("start: ",start_time,", end: ", end_time,", difference: ", end_time-start_time), file="runtime_application4_2.txt")

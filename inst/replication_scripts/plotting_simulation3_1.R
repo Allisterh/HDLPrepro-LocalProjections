@@ -1,5 +1,6 @@
 # This script processes the files of the simulation in Section 3.1 and generates the plots in our paper
 rm(list=ls())
+start_time<-Sys.time()
 library(HDLPrepro) #1.0.0
 
 # in case the following packages are not installed, run:
@@ -8,11 +9,17 @@ library(reshape2) #1.4.4
 library(ggplot2) #3.4.2
 library(ggpubr) #0.6.0
 
+#use this command set the directory in which the plots will be saved
+#setwd("your/path/here")
+#if you want to plot simulations saved in a local folder, load_sim_from_local_folder should be set to TRUE, and the path set above MUST be the folder where the simulation outputs were stored
+#if load_sim_from_local_folder is FALSE, it will load our simulation results and calibration parameters saved in the package 
+load_sim_from_local_folder <- TRUE
 
-# load the simulation results and process into array ----------------------
-# this points to a folder in the package containing our simulation results. 
-# If the simulation is rerun, sim_folder should be the folder where the simulation outputs are stored
-sim_folder<-system.file("extdata", package="HDLPrepro", mustWork = TRUE) 
+if(load_sim_from_local_folder){
+  sim_folder<-getwd()
+}else{
+  sim_folder<-system.file("extdata", package="HDLPrepro", mustWork = TRUE) 
+}
 
 # THE FOLLOWING SETTINGS SHOULD MATCH THOSE IN THE SCRIPT running_simulations3_1.R 
 ################################ settings ######################################
@@ -38,7 +45,7 @@ width_partial_switching<-sims_to_width(path=sim_folder, M, Ns, Ts, PIs, hmax, pa
 
 
 # plot coverages ----------------------------------------------------------
-# code for Figure S.1 in the supplementary appendix. Figure 1 is the middle row of this plot
+# code for Figure S.1 in the supplementary appendix and Figure 1
 pi=5 # pi=5 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. For different values, take pi=1,...,4
 count<-0
 P<-list()
@@ -66,10 +73,10 @@ for(n in 1:length(Ns)){
 
 ggarrange(P[[1]],P[[2]],P[[3]],P[[4]],P[[5]],P[[6]],P[[7]],P[[8]],P[[9]],
           ncol=3, nrow=3, legend="right",common.legend = TRUE,legend.grob = get_legend(P[[1]]))
-#ggsave(filename="sim_coverage.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
+ggsave(filename="figS1.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
 ggarrange(P[[4]],P[[5]],P[[6]],
           ncol=3, nrow=1, legend="right",common.legend = TRUE,legend.grob = get_legend(P[[1]]))
-#ggsave(filename="sim_coverage_middle_row.pdf",device="pdf",width=18, height = 6, units="cm",dpi=1000)
+ggsave(filename="fig1.pdf",device="pdf",width=18, height = 6, units="cm",dpi=1000)
 
 # plot interval widths ----------------------------------------------------
 # code for Figure S.2 in the supplementary appendix
@@ -97,4 +104,8 @@ for(n in 1:length(Ns)){
 }
 ggarrange(P[[1]],P[[2]],P[[3]],P[[4]],P[[5]],P[[6]],P[[7]],P[[8]],P[[9]],
           ncol=3, nrow=3, legend="right",common.legend = TRUE)
-#ggsave(filename="sim_width.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
+ggsave(filename="figS2.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
+
+# noting the time ---------------------------------------------------------
+end_time <- Sys.time()
+write(paste0("start: ",start_time,", end: ", end_time,", difference: ", end_time-start_time), file="runtime_plotting_simulation3_1.txt")

@@ -1,9 +1,10 @@
 # This script runs the simulation of Section 3.1 and saves intermediate files in a user-chosen folder
 rm(list=ls())
+start_time<-Sys.time()
 library(HDLPrepro) #1.0.0
 
-
-setwd("your/path/here")
+#use this command set the directory in which the simulation outputs will be saved
+#setwd("your/path/here")
 
 ################################ settings ######################################
 Ns<-c(20,40,100) # numbers of variables 
@@ -22,10 +23,6 @@ alphas=0.05 # desired level of the test; equivalently, (1-alpha)% confidence int
 z_quantiles=qnorm(alphas/2.0,0.0,1.0,FALSE,FALSE); # quantiles of the Normal distribution associated with alpha
 chi2_quantiles=qchisq(alphas,1,FALSE,FALSE); # quantiles of the Chi-squared distribution associated with alpha
 ################################################################################
-
-
-
-
 
 # First set: partial DL ---------------------------------------------------
 ################################ settings ######################################
@@ -129,3 +126,7 @@ for(n in 1:length(Ns)){
     }
   }
 }
+
+# noting the time ---------------------------------------------------------
+end_time <- Sys.time()
+write(paste0("start: ",start_time,", end: ", end_time,", difference: ", end_time-start_time), file="runtime_simulation3_1.txt")

@@ -1,9 +1,13 @@
 # This script processes the data obtained from the FRED-MD database. It includes our data transformations which differ from the "default" choices, and our classification of "fast" and "slow" variables
 rm(list=ls())
+start_time<-Sys.time()
 library(HDLPrepro) #1.0.0
 # in case the following package is not installed, run:
 #install.packages("xtable")
 library(xtable) #1.8-4
+
+#use this command set the directory in which the files will be saved
+#setwd("your/path/here")
 
 # Read in data ------------------------------------------------------------
 raw_data<-read.csv(file=system.file("extdata", "current.csv", package="HDLPrepro", mustWork = TRUE),encoding = "UTF-8") #the file "current.csv" was obtained from https://research.stlouisfed.org/econ/mccracken/fred-databases/ on 9/9/2021
@@ -201,7 +205,7 @@ CDbmedium<-clean_data(raw_data=raw_data,
                       end_date = "10/1/2008",
                       transform_codes = b_tcode
 )
-
+saveRDS(CDbmedium, "CDbmedium.RData")
 # Make tables for appendix ------------------------------------------------
 # We first copy the relevant parts of tables in the Appendix of McCracken & Ng (2015),
 # then match them to our specification
@@ -635,3 +639,7 @@ xtable(clean_MC)
 xtable(clean_IE)
 xtable(clean_Pr)
 xtable(clean_SM)
+
+# noting the time ---------------------------------------------------------
+end_time <- Sys.time()
+write(paste0("start: ",start_time,", end: ", end_time,", difference: ", end_time-start_time), file="runtime_processing_FREDMD.txt")
