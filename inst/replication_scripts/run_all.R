@@ -1,3 +1,12 @@
+#you can run the following to install the exact versions of packages we used
+#remotes::install_version("desla", version = "0.3.0", repos = "https://cloud.r-project.org")
+#remotes::install_version("dplyr", version = "1.1.2", repos = "https://cloud.r-project.org")
+#remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.r-project.org")
+#remotes::install_version("ggplot2", version = "3.4.2", repos = "https://cloud.r-project.org")
+#remotes::install_version("ggpubr", version = "0.6.0", repos = "https://cloud.r-project.org")
+#remotes::install_version("readxl", version = "1.4.3", repos = "https://cloud.r-project.org")
+#remotes::install_version("reshape2", version = "1.4.4", repos = "https://cloud.r-project.org")
+#remotes::install_version("xtable", version = "1.8-4", repos = "https://cloud.r-project.org")
 #set a local folder where all outputs of all scripts will be stored
 setwd("your/path/here")
 

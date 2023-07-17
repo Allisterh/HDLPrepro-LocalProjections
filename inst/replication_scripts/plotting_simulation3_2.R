@@ -35,19 +35,19 @@ if(load_sim_from_local_folder){
 
 # plotting the "dense" DFM  -----------------------------------------------
 # code for Figure S.4 in the supplementary appendix
-plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
-ggsave(filename="figS4.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+figS4<-plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
+ggsave(filename="figS4.pdf", plot=figS4, device="pdf",width=19, height = 12, units="cm",dpi=1000)
 #code for Figure S.5 in the supplementary appendix
-plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
-ggsave(filename="figS5.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+figS5<-plot_processed_sim(process_sim(pc_OLS_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
+ggsave(filename="figS5.pdf", plot=figS5, device="pdf",width=19, height = 12, units="cm",dpi=1000)
 
 # plotting the "sparse" DFM -----------------------------------------------
 # code for Figure 2
-plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
-ggsave(filename="fig2.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+fig2<-plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_models
+ggsave(filename="fig2.pdf", plot=fig2, device="pdf",width=19, height = 12, units="cm",dpi=1000)
 # code for Figure S.6 in the supplementary appendix
-plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
-ggsave(filename="figS6.pdf",device="pdf",width=19, height = 12, units="cm",dpi=1000)
+figS6<-plot_processed_sim(process_sim(sWF_lasso_sim), models=c("HDLP_04", "FALP", "LP"))$combined_only_lrvs
+ggsave(filename="figS6.pdf", plot=figS6, device="pdf",width=19, height = 12, units="cm",dpi=1000)
 
 
 
