@@ -1,4 +1,5 @@
 #you can run the following to install the exact versions of packages we used
+#remotes::install_version("bigtime", version = "0.2.2", repos = "https://cloud.r-project.org")
 #remotes::install_version("desla", version = "0.3.0", repos = "https://cloud.r-project.org")
 #remotes::install_version("dplyr", version = "1.1.2", repos = "https://cloud.r-project.org")
 #remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.r-project.org")

@@ -38,6 +38,7 @@ In addition to a collection of functions and datasets, this package contains a s
 
 These scripts make use of several packages other than `HDLPrepro` and `desla`. For completeness, we list all used packages here, as well as the package versions with which we ran the code ourselves:
 
+- `bigtime` (0.2.2)
 - `desla` (0.3.0)
 - `dplyr` (1.1.2)
 - `ggpattern` (1.0.1)
