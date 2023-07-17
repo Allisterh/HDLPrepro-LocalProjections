@@ -65,7 +65,7 @@ saveRDS(sWF_lasso_IRF, file="sWF_lasso_IRF.RData")
 cl <-  parallel::makeCluster(threads)
 parallel::clusterEvalQ(cl, library(HDLPrepro))
 parallel::clusterEvalQ(cl, library(desla))
-clusterExport(cl, envir=environment())
+parallel::clusterExport(cl, varlist=c("pc_OLS_DFM", "pc_OLS_IRF", "sWF_lasso_DFM", "sWF_lasso_IRF"))
 for(setup in c("pc_OLS", "sWF_lasso")){
   dfm<-get(paste0(setup,"_DFM"))
   irf<-get(paste0(setup,"_IRF"))
