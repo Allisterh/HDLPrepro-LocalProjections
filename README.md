@@ -49,7 +49,8 @@ These scripts make use of several packages other than `HDLPrepro` and
 `desla`. For completeness, we list all used packages here, as well as
 the package versions with which we ran the code ourselves:
 
-- `desla` (0.2.0)
+- `bigtime` (0.2.2)
+- `desla` (0.3.0)
 - `dplyr` (1.1.2)
 - `ggpattern` (1.0.1)
 - `ggplot2` (3.4.2)
@@ -86,7 +87,7 @@ create a collection and files and plots. The user must specify a folder
 where these outputs will be stored by changing the command
 `setwd("your/path/here")` to point to a local folder. An example of
 correct syntax on Windows is `setwd("D:/reproduction_files")`. The
-created files will take up approximately ???????.
+created files will take up approximately 75MB.
 
 The individual scripts included are as follows:
 
@@ -149,27 +150,27 @@ running them. The specifications of the machine we used are:
 
 Runtimes:
 
-- `running_simulation3_1.R`: 17 hours
+- `running_simulation3_1.R`: 21 hours
 
-- `plotting_simulation3_1.R`: 30 seconds
+- `plotting_simulation3_1.R`: 14 seconds
 
-- `processing_FREDMD.R`: \<5 seconds
+- `processing_FREDMD.R`: 1 second
 
-- `calibrating_DFM3_2.R`: 7 minutes
-
-- `running_simulation3_2.R`: 9 hours
+- `running_simulation3_2.R`: 6 hours
 
 - `plotting_simulation3_2.R`: 20 seconds
 
 - `application4_1.R`: 5 hours
 
-- `processing_R&Z_data.R`: \<1 second
+- `processing_R&Z_data.R`: 1 second
 
-- `application4_2.R`: 5 minutes
+- `application4_2.R`: 2 minutes
+
+- `run_all.R` : 31.5 hours
 
 Installation of this package and other related packages requires approx.
 730MB, and the files/plots produced by running the scripts take up
-around 310MB.
+around 75MB.
 
 While we did not do extensive testing on the hardware requirements to
 run the code, we expect it to run on most commercially available

@@ -60,7 +60,7 @@ remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.
 
 We also plan to maintain this package to be compatible with future versions of R, but if this is not the case, we ran all applications and simulations on R version 4.1.3. Past versions of R can be obtained from https://cran.r-project.org/. The code was also successfully tested on R version 4.3.1.
 
-If one wants to run **all** the code related to the paper, the script `run_all.R` will execute all individual scripts in correct order and create a collection and files and plots. The user must specify a folder where these outputs will be stored by changing the command `setwd("your/path/here")` to point to a local folder. An example of correct syntax on Windows is `setwd("D:/reproduction_files")`. The created files will take up approximately ???????.
+If one wants to run **all** the code related to the paper, the script `run_all.R` will execute all individual scripts in correct order and create a collection and files and plots. The user must specify a folder where these outputs will be stored by changing the command `setwd("your/path/here")` to point to a local folder. An example of correct syntax on Windows is `setwd("D:/reproduction_files")`. The created files will take up approximately 75MB.
 
 The individual scripts included are as follows:
 
@@ -97,25 +97,25 @@ Running all applications and simulations can be time-intensive, and take multipl
 
 Runtimes:
 
-- `running_simulation3_1.R`: 17 hours
+- `running_simulation3_1.R`: 21 hours
 
-- `plotting_simulation3_1.R`: 30 seconds
+- `plotting_simulation3_1.R`: 14 seconds
  
-- `processing_FREDMD.R`: <5 seconds
+- `processing_FREDMD.R`: 1 second
 
-- `calibrating_DFM3_2.R`: 7 minutes
-
-- `running_simulation3_2.R`: 9 hours
+- `running_simulation3_2.R`: 6 hours
 
 - `plotting_simulation3_2.R`: 20 seconds
 
 - `application4_1.R`: 5 hours
 
-- `processing_R&Z_data.R`: <1 second
+- `processing_R&Z_data.R`: 1 second
 
-- `application4_2.R`: 5 minutes
+- `application4_2.R`: 2 minutes
 
-Installation of this package and other related packages requires approx. 730MB, and the files/plots produced by running the scripts take up around 310MB.
+- `run_all.R` : 31.5 hours
+
+Installation of this package and other related packages requires approx. 730MB, and the files/plots produced by running the scripts take up around 75MB.
 
 While we did not do extensive testing on the hardware requirements to run the code, we expect it to run on most commercially available computers with 8GB RAM or more.
 
