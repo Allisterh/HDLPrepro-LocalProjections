@@ -9,17 +9,17 @@ Inference in High-Dimensions.
 
 ## Installation
 
-This package can be installed with the devtools package:
+This package can be installed with the \`remotes\`\` package:
 
 ``` r
-utils::install.packages("devtools")
+install.packages("remotes")
 ```
 
 You can then install the HDLPrepro package from the GitHub depository
 directly by running:
 
 ``` r
-devtools::install_github("RobertAdamek/HDLPrepro")
+remotes::install_github("RobertAdamek/HDLPrepro")
 ```
 
 Note that as the package contains C++ code, installing the package from
@@ -64,7 +64,7 @@ We expect these packages to remain backwards compatible, and the most
 up-to-date versions can be installed with
 
 ``` r
-utils::install.packages(pkgs = c("dplyr", "ggpattern", "ggplot2", "ggpubr", "readxl", "reshape2"))
+install.packages(pkgs = c("dplyr", "ggpattern", "ggplot2", "ggpubr", "readxl", "reshape2"))
 ```
 
 Alternatively, it is possible to install the versions used in this
@@ -77,13 +77,13 @@ remotes::install_version("ggpattern", version = "1.0.1", repos = "https://cloud.
 
 We also plan to maintain this package to be compatible with future
 versions of R, but if this is not the case, we ran all applications and
-simulations on R version 4.1.3. Past versions of R can be obtained from
-<https://cran.r-project.org/>. The code was also successfully tested on
-R version 4.3.1.
+simulations on R version 4.3.1. When this is no longer the most recent
+version of R, past versions of R can be obtained from
+<https://cran.r-project.org/>.
 
 If one wants to run **all** the code related to the paper, the script
 `run_all.R` will execute all individual scripts in correct order and
-create a collection and files and plots. The user must specify a folder
+create a collection of files and plots. The user must specify a folder
 where these outputs will be stored by changing the command
 `setwd("your/path/here")` to point to a local folder. An example of
 correct syntax on Windows is `setwd("D:/reproduction_files")`. The
@@ -136,7 +136,7 @@ Running all applications and simulations can be time-intensive, and take
 multiple days to complete depending on the specifications of the machine
 running them. The specifications of the machine we used are:
 
-- R version: 4.1.3 (2022-03-10)
+- R version: 4.3.1
 
 - Platform: x86_64-w64-mingw32/x64 (64-bit)
 
