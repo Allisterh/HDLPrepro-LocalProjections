@@ -6,17 +6,18 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
-// [[Rcpp::plugins(openmp)]]
+// I removed the line [[Rcpp::plugins(openmp)]] because it's obsolete and was causing problems on Stephan's Mac
 // [[Rcpp::depends(RcppProgress)]]
 #include <progress.hpp>
 #include <progress_bar.hpp>
+
+#define ARMA_DONT_USE_OPENMP 1
 
 using namespace Rcpp;
 using namespace arma;
 using namespace std;
 
 //struct definitions
-
 struct lasso_output{
   unsigned int N, T_, gridsize;
   arma::vec grid, y;
@@ -1490,6 +1491,7 @@ List simulate_LP(const unsigned int& M, const unsigned int& T_, const unsigned i
   arma::cube sim_betahats((LP_lags+1)*N, hmax+1, M);
 
 #ifdef _OPENMP
+  //omp_set_nested(0); /////////////////////////////////////////////////////////////////  THIS HAS BEEN ADDED TO TRY TO FIX NESTED PARALLELIZATION ISSUES!
   omp_set_num_threads(threads);
 #endif
 # pragma omp parallel for

@@ -136,8 +136,8 @@ p4<-ggplot(data=df_sparse, aes(x=Regressor, y=Dependent))+
 bars<-ggarrange(p1, p2, common.legend = TRUE, legend="right")
 heatmaps<-ggarrange(p3,p4, common.legend=TRUE, legend="right")
 
-ggarrange(bars, heatmaps, ncol=1)
-ggsave(filename="figS3.pdf",device="pdf",width=18, height = 18, units="cm",dpi=1000)
+combined<-ggarrange(bars, heatmaps, ncol=1)
+ggsave(filename="figS3.pdf", plot=combined, device="pdf", width=18, height = 18, units="cm", dpi=1000)
 
 # noting the time ---------------------------------------------------------
 end_time <- Sys.time()

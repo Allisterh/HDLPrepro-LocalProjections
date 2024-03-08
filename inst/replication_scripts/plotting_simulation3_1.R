@@ -25,7 +25,8 @@ if(load_sim_from_local_folder){
 ################################ settings ######################################
 Ns<-c(20,40,100) # numbers of variables 
 Ts<-c(100,200,500) # sample sizes
-PIs<-c(0.4,0.5,0.6,0.7,0.8) # values of the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
+PIs<-0.8 # values of the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008. 
+#If you want to plot the results for other values than 0.8, change this to e.g. PIs=c(0.4,0.5,0.6,0.7,0.8) (this needs to match the setting in running_simulation3_1.R). which value is being plotted is then controlled by the index variable pi below. 
 M=1000 # number of replications in the simulation
 hmax=10 #  maximum horizon - the impulse response function is evaluated from horizon 0 to hmax
 VAR_lags=4 # number of VAR lags in the DGP
@@ -46,7 +47,7 @@ width_partial_switching<-sims_to_width(path=sim_folder, M, Ns, Ts, PIs, hmax, pa
 
 # plot coverages ----------------------------------------------------------
 # code for Figure S.1 in the supplementary appendix and Figure 1
-pi=5 # pi=5 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. For different values, take pi=1,...,4
+pi=1 # pi=1 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. If more values were simulated, this needs to be manually adjusted
 count<-0
 P<-list()
 for(n in 1:length(Ns)){
@@ -80,7 +81,7 @@ ggsave(filename="fig1.pdf",device="pdf",width=18, height = 6, units="cm",dpi=100
 
 # plot interval widths ----------------------------------------------------
 # code for Figure S.2 in the supplementary appendix
-pi=5 # pi=5 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. For different values, take pi=1,...,4
+pi=1 # pi=1 plots the simulation results for plug-in constant = 0.8, which is what we include in the paper. If more values were simulated, this needs to be manually adjusted
 count<-0
 P<-list()
 for(n in 1:length(Ns)){

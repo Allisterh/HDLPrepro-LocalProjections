@@ -145,8 +145,8 @@ p6<-ggplot(data=y_df, aes(x=Horizon)) +
   xlab("Horizon") +
   ylab("GDP")+theme_bw()
 
-ggarrange(p2,p3,p5,p6, common.legend = TRUE, legend="right")
-ggsave(filename="fig4.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+combined1<-ggarrange(p2,p3,p5,p6, common.legend = TRUE, legend="right")
+ggsave(filename="fig4.pdf",plot=combined1, device="pdf",width=18, height = 12, units="cm",dpi=1000)
 
 
 # two combined states -----------------------------------------------------
@@ -328,8 +328,8 @@ first_col_a<-annotate_figure(first_col,top = text_grob("Recession", color = "bla
 second_col<-ggarrange(p2,p6, nrow=2)
 second_col_a<-annotate_figure(second_col,top = text_grob("No Recession", color = "black", face = "bold", size = 14))
 
-ggarrange(plotlist=list(p1,p2,p5,p6), legend="right", common.legend = TRUE)
-ggsave(filename="fig5.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+combined2<-ggarrange(plotlist=list(p1,p2,p5,p6), legend="right", common.legend = TRUE)
+ggsave(filename="fig5.pdf",plot=combined2, device="pdf",width=18, height = 12, units="cm",dpi=1000)
 
 # noting the time ---------------------------------------------------------
 end_time <- Sys.time()

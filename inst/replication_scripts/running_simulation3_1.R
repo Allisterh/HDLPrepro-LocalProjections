@@ -9,8 +9,8 @@ library(HDLPrepro) #1.0.0
 ################################ settings ######################################
 Ns<-c(20,40,100) # numbers of variables 
 Ts<-c(100,200,500) # sample sizes
-PIs<-c(0.4,0.5,0.6,0.7,0.8) # values of the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008
-#PIs<-0.8 # to speed up the simulation significantly, one could run them only for the plug-in constant 0.8 which we present in the paper
+PIs<-c(0.4,0.5,0.6,0.7,0.8) # values of the plug-in constant used for the data-dependent selection of the lasso penalization. Generally, higher value gives stronger penalization. For details, see Algorithm 1 in the supplementary appendix C.5 of https://doi.org/10.1016/j.jeconom.2022.08.008. 
+run_only_PI0.8=TRUE #  When true, the code only runs and saves the simulation for the plug-in value of 0.8, which is what we present in the paper. To run the simulation for all plug-in values in the PIs vector, set this to true. Note that to actually plot the results for other plug-in values, changes need to be made to the "plotting_simulation3_1.R" script. Running the full simulation may cause errors on non-Windows operating systems. 
 M=1000 # number of replications in the simulation
 hmax=10 #  maximum horizon - the impulse response function is evaluated from horizon 0 to hmax
 VAR_lags=4 # number of VAR lags in the DGP
@@ -41,10 +41,12 @@ for(n in 1:length(Ns)){
       Sigma_epsilon<-diag(N)
       seeds_gen<-sample(1e8, M)
       seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
-      sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
-                       init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
-      saveRDS(sim, file=paste0("partial_N",N,"_T",T_,"_PI",PIconstant,".RDS"))
+      if(PIconstant==0.8 || run_only_PI0.8==FALSE){ 
+        sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
+                         init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
+                         progress_bar, OLS, threads, seeds_gen, seeds_DL)
+        saveRDS(sim, file=paste0("partial_N",N,"_T",T_,"_PI",PIconstant,".RDS"))
+      }
     }
   }
 }
@@ -67,10 +69,12 @@ for(n in 1:length(Ns)){
       Sigma_epsilon<-diag(N)
       seeds_gen<-sample(1e8, M)
       seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
-      sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
-                       init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
-      saveRDS(sim, file=paste0("regular_N",N,"_T",T_,"_PI",PIconstant,".RDS"))
+      if(PIconstant==0.8 || run_only_PI0.8==FALSE){  
+        sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
+                         init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
+                         progress_bar, OLS, threads, seeds_gen, seeds_DL)
+        saveRDS(sim, file=paste0("regular_N",N,"_T",T_,"_PI",PIconstant,".RDS"))
+      }
     }
   }
 }
@@ -93,10 +97,12 @@ for(n in 1:length(Ns)){
       Sigma_epsilon<-diag(N)
       seeds_gen<-sample(1e8, M)
       seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
-      sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
-                       init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
-      saveRDS(sim, file=paste0("partial_N",N,"_T",T_,"_PI",PIconstant,"_switching_signs.RDS"))
+      if(PIconstant==0.8 || run_only_PI0.8==FALSE){  
+        sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
+                         init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
+                         progress_bar, OLS, threads, seeds_gen, seeds_DL)
+        saveRDS(sim, file=paste0("partial_N",N,"_T",T_,"_PI",PIconstant,"_switching_signs.RDS"))
+      }
     }
   }
 }
@@ -119,10 +125,12 @@ for(n in 1:length(Ns)){
       Sigma_epsilon<-diag(N)
       seeds_gen<-sample(1e8, M)
       seeds_DL<-array(data=sample(1e8, 2*(hmax+1)*M), dim=c(2, hmax+1, M))
-      sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
-                       init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
-                       progress_bar, OLS, threads, seeds_gen, seeds_DL)
-      saveRDS(sim, file=paste0("regular_N",N,"_T",T_,"_PI",PIconstant,"_switching_signs.RDS"))
+      if(PIconstant==0.8 || run_only_PI0.8==FALSE){ 
+        sim<-simulate_LP(M, T_, LP_lags, hmax, VAR_coefficients, Sigma_epsilon, irf_1to1,
+                         init_partial, z_quantiles, chi2_quantiles, selection, PIconstant,
+                         progress_bar, OLS, threads, seeds_gen, seeds_DL)
+        saveRDS(sim, file=paste0("regular_N",N,"_T",T_,"_PI",PIconstant,"_switching_signs.RDS"))
+      }
     }
   }
 }

@@ -65,10 +65,10 @@ saveRDS(HDLP_CPI_irf, "HDLP_CPI_irf.RData")
 
 # to avoid having to run the above, we include the results as data in the package - read them in by uncommenting the below
 #internal_path<-system.file("extdata", package="HDLPrepro", mustWork = TRUE)
-#FAVAR_irfs<-readRDS(paste0(local_path,"/FAVAR_irfs.RData"))
-#HDLP_FFR_irf<-readRDS(paste0(local_path,"/HDLP_FFR_irf.RData"))
-#HDLP_IP_irf<-readRDS(paste0(local_path,"/HDLP_IP_irf.RData"))
-#HDLP_CPI_irf<-readRDS(paste0(local_path,"/HDLP_CPI_irf.RData"))
+#FAVAR_irfs<-readRDS(paste0(internal_path,"/FAVAR_irfs.RData"))
+#HDLP_FFR_irf<-readRDS(paste0(internal_path,"/HDLP_FFR_irf.RData"))
+#HDLP_IP_irf<-readRDS(paste0(internal_path,"/HDLP_IP_irf.RData"))
+#HDLP_CPI_irf<-readRDS(paste0(internal_path,"/HDLP_CPI_irf.RData"))
 
 # plotting ----------------------------------------------------------------
 # code for Figure 3
@@ -124,8 +124,8 @@ p6<-ggplot(mapping=aes(x=0:hmax))+
 first_row<-ggarrange(p4,p5,p6,nrow=1)
 first_row<-annotate_figure(first_row,top = text_grob("HDLP", color = "black", face = "bold", size = 14))
 
-ggarrange(first_row,second_row, ncol=1)
-ggsave(filename="fig3.pdf",device="pdf",width=18, height = 12, units="cm",dpi=1000)
+combined<-ggarrange(first_row,second_row, ncol=1)
+ggsave(filename="fig3.pdf",plot=combined,device="pdf",width=18, height = 12, units="cm",dpi=1000)
 
 # noting the time ---------------------------------------------------------
 end_time <- Sys.time()

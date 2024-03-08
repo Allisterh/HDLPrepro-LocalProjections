@@ -421,6 +421,22 @@ pc <- function(z, undo_scale = TRUE) {
   return(list(F_hat = F.hat, Lambda_hat = l.hat, eigenv = scree, RSS = V))
 }
 
+pc_lean <- function(z, undo_scale = TRUE) {
+  z <- as.matrix(z)
+  x <- scale(z)
+  if (undo_scale) {
+    xs <- z
+  } else {
+    xs <- x
+  }
+  n <- nrow(x)
+  p <- ncol(x)
+  evv <- eigen(x %*% t(x), symmetric = TRUE)
+  F.hat <- sqrt(n) * evv$vectors
+  l.hat <- crossprod(xs, F.hat) / n
+  return(list(F_hat = F.hat, Lambda_hat = l.hat))
+}
+
 sWF <- function(z, n_f=6, undo_scale=TRUE) {
   var_names<-colnames(z)
   z <- as.matrix(z)
@@ -795,6 +811,74 @@ one_replication_lean<-function(dummy_list=list(),Ts=c(200, 400, 600), DFM, IRF){
     y <- Z[, 1]
     slow <- Z[, 3:ncol(Z) - 1]
     f<-pc(z=slow)
+    slow_factors<-f$F_hat[,1:n_f]
+    cpi<-Z[,"CPIAUCSL"]
+    e <- data$obs_shock[, 1]
+    
+    HDLP_04 <- desla::HDLP(x = x, y = y, r = slow, PI_constant=0.4, y_predetermined = TRUE, hmax = h_max, lags = 3, progress_bar = FALSE, parallel=FALSE)
+    
+    #HDLP_08 <- desla::HDLP(x = x, y = y, r = slow, PI_constant=0.8, y_predetermined = TRUE, hmax = h_max, lags = 3, progress_bar = FALSE, parallel=FALSE)
+    
+    LP <- desla::HDLP(x = x, y = y, r = cpi, OLS=TRUE, y_predetermined = TRUE, hmax = h_max, lags = 3, progress_bar = FALSE, parallel=FALSE)
+    
+    FALP <- desla::HDLP(x = x, y = y, r = slow_factors, OLS=TRUE, y_predetermined = TRUE, hmax = h_max, lags = 3, progress_bar = FALSE, parallel=FALSE)
+    
+    #observed <- desla::HDLP(x = e, y = y, r = slow, q = x, PI_constant=0.4, y_predetermined = TRUE, hmax = h_max, lags = 3, progress_bar = FALSE, parallel=FALSE)
+    
+    for(dgp_name in c("HDLP_04","LP","FALP")){
+      for(lrv_name in c("intervals", "intervals_EWC","intervals_NWfb")){
+        intervals[,,ts,dgp_name,lrv_name]<-get(lrv_name, get(dgp_name))
+        for(h in 1:(h_max+1)){
+          lower<-intervals[h,"lower",ts,dgp_name,lrv_name]
+          upper<-intervals[h,"upper",ts,dgp_name,lrv_name]
+          if(lower<= IRF[h] && IRF[h]<=upper){
+            covered[h,ts,dgp_name,lrv_name]<-TRUE
+          }else{
+            covered[h,ts,dgp_name,lrv_name]<-FALSE
+          }
+          w<-upper-lower
+          width[h,ts,dgp_name,lrv_name]<-w
+        }
+        
+      }
+    }
+  }
+  return(list(covered=covered, width=width))
+}
+
+#' @export
+one_replication_lean_manual_seed<-function(seed, Ts=c(200, 400, 600), DFM, IRF){
+  set.seed(seed)
+  h_max<-length(IRF)-1
+  intervals<-array(0,dim=c(h_max+1,3,length(Ts), 3, 3), dimnames=list(
+    horizon=0:h_max, 
+    information=c("lower","bhat","upper"), 
+    T_=c(paste0("T_",Ts)), 
+    DGP=c("HDLP_04", "LP", "FALP"), 
+    LRV=c("intervals","intervals_EWC","intervals_NWfb")))
+  
+  covered<-array(FALSE,dim=c(h_max+1,length(Ts), 3, 3), dimnames=list(
+    horizon=0:h_max, 
+    T_=c(paste0("T_",Ts)), 
+    DGP=c("HDLP_04", "LP", "FALP"), 
+    LRV=c("intervals","intervals_EWC","intervals_NWfb")))
+  
+  width<-array(0,dim=c(h_max+1,length(Ts), 3, 3), dimnames=list(
+    horizon=0:h_max, 
+    T_=c(paste0("T_",Ts)), 
+    DGP=c("HDLP_04", "LP", "FALP"), 
+    LRV=c("intervals","intervals_EWC","intervals_NWfb")))
+  
+  for(ts in 1:length(Ts)){
+    T_<-Ts[ts]
+    S<-1:122
+    n_f=6
+    data <- generate_DFM(n=T_, DFM$factors, DFM$idio, init = 50, max_EV = 0.98)
+    Z <- data$X[, S]
+    x <- Z[, ncol(Z)]
+    y <- Z[, 1]
+    slow <- Z[, 3:ncol(Z) - 1]
+    f<-pc_lean(z=slow)
     slow_factors<-f$F_hat[,1:n_f]
     cpi<-Z[,"CPIAUCSL"]
     e <- data$obs_shock[, 1]

@@ -1,7 +1,7 @@
 Type: Package
 Package: HDLPrepro
 Title: Reproducing Adamek, Smeekes, Wilms (2023)
-Version: 1.0
+Version: 1.12
 Date: 2023-05-22
 Authors@R: c(
     person("Robert", "Adamek", , "robertadamek94@gmail.com", role = c("cre", "aut")),
